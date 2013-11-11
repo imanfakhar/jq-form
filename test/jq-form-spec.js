@@ -38,6 +38,7 @@ describe('jqForm Plugin: Test Suite', function() {
       disableSubmit: false,
       dataType: 'json',
       ajaxSubmit: true,
+      isValid: jasmine.any(Function),
       onSubmitSuccess: jasmine.any(Function),
       onSubmitError: jasmine.any(Function),
       onSubmitComplete: jasmine.any(Function)
@@ -64,6 +65,7 @@ describe('jqForm Plugin: Test Suite', function() {
         disableSubmit: true,
         dataType: 'json',
         ajaxSubmit: true,
+        isValid: jasmine.any(Function),
         onSubmitSuccess: jasmine.any(Function),
         onSubmitError: jasmine.any(Function),
         onSubmitComplete: jasmine.any(Function)
@@ -323,6 +325,23 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$plugin.xhr = {};
       this.$plugin.submit();
       expect($.ajax).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('jqForm: check custom validation', function() {
+    it("should detect custom validation", function() {
+      this.$input = $('<input type="text" />');
+      this.$form.append(this.$input);
+
+      var customIsValid = jasmine.createSpy('isValid').andReturn(false);
+      this.$form.jqForm({
+        isValid: customIsValid
+      });
+
+      this.$plugin = this.$form.data('jqForm');
+      var result = this.$plugin.validate();
+      expect(result).toBe(true);
+      expect(this.$plugin.errors.$$custom).toBe(true);
     });
   });
 

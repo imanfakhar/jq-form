@@ -39,6 +39,10 @@
   var noop = function() {
   };
 
+  var returnTrue = function() {
+    return true;
+  };
+
   /**
    * Plugin name stored in data cache.
    * @type {string}
@@ -658,6 +662,14 @@
         }
       }
 
+      this.errors.$$custom = undefined;
+      var customIsValid = this.opts.isValid.call(this, this.$form, this.errors);
+      if (!customIsValid) {
+        this.errors.$$custom = true;
+        addClasses(this.$form, CSS_ERROR);
+        formError = true;
+      }
+
       // Disable / Enable submit button
       if (this.opts.disableSubmit) {
         if (formError) {
@@ -1077,6 +1089,7 @@
     disableSubmit: false,
     dataType: 'json',
     ajaxSubmit: true,
+    isValid: noop,
     onSubmitSuccess: noop,
     onSubmitError: noop,
     onSubmitComplete: noop
