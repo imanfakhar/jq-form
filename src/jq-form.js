@@ -491,17 +491,13 @@
   };
 
   Form.prototype = {
-    /**
-     * Initialize plugin.
-     */
+    /** Initialize plugin. */
     init: function() {
       this.bind();
       this.validate();
     },
 
-    /**
-     * Bind user events.
-     */
+    /** Bind user events. */
     bind: function() {
       var that = this;
       this.$form.on('keyup.jqForm', function(event) {
@@ -532,9 +528,7 @@
       });
     },
 
-    /**
-     * Validate form.
-     */
+    /** Validate form. */
     validate: function() {
       var that = this;
       this.$form.find('input, select, textarea').each(function() {
@@ -546,9 +540,7 @@
       return this.checkForm();
     },
 
-    /**
-     * Submit form.
-     */
+    /** Submit form. */
     submit: function() {
       if (!this.xhr) {
         var method = this.$form.attr('method');
@@ -584,9 +576,7 @@
       }
     },
 
-    /**
-     * Unbind user events.
-     */
+    /** Unbind user events. */
     unbind: function() {
       this.$form.off('.jqForm');
     },
