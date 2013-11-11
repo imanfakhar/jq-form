@@ -570,12 +570,21 @@
     /** Validate form. */
     validate: function() {
       var that = this;
+      var first = null;
       this.$form.find('input, select, textarea').each(function() {
         var $this = $(this);
         if (!$this.is('input') || $this.attr('type') !== 'hidden') {
-          that.check($this);
+          var error = that.check($this);
+          if (error && !first) {
+            first = $this;
+          }
         }
       });
+
+      if (first) {
+        first.focus();
+      }
+
       return this.checkForm();
     },
 
@@ -649,6 +658,7 @@
 
       this.errors[name] = error;
       this.checkForm();
+      return error;
     },
 
     /**

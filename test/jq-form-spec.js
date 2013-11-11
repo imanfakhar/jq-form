@@ -323,7 +323,7 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$plugin.xhr).toBe(null);
     });
 
-    it('should submit form during submit', function() {
+    it('should not submit form during submit', function() {
       this.$plugin.xhr = {};
       this.$plugin.submit();
       expect($.ajax).not.toHaveBeenCalled();
@@ -344,6 +344,20 @@ describe('jqForm Plugin: Test Suite', function() {
       var result = this.$plugin.validate();
       expect(result).toBe(true);
       expect(this.$plugin.errors.$$custom).toBe(true);
+    });
+  });
+
+  describe('jqForm: check focus on error', function() {
+    it("should detect custom validation", function() {
+      spyOn($.fn, 'focus').andCallThrough();
+      this.$input = $('<input type="text" required="required" />');
+      this.$form.append(this.$input);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+      var result = this.$plugin.validate();
+      expect(result).toBe(true);
+      expect(this.$input.focus).toHaveBeenCalled();
     });
   });
 
