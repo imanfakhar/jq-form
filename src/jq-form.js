@@ -527,6 +527,11 @@
   Form.prototype = {
     /** Initialize plugin. */
     init: function() {
+      // Disable autovalidation
+      if (!this.opts.autovalidate) {
+        this.$form.attr('autovalidate', 'false');
+      }
+
       this.bind();
       this.validate();
     },
@@ -1089,6 +1094,7 @@
     disableSubmit: false,
     dataType: 'json',
     ajaxSubmit: true,
+    autovalidate: false,
     isValid: noop,
     onSubmitSuccess: noop,
     onSubmitError: noop,
