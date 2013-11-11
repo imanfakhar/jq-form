@@ -8,6 +8,7 @@ describe('jqForm Plugin: Test Suite', function() {
     spyOn($.fn, 'attr').andCallThrough();
     spyOn($.fn, 'addClass').andCallThrough();
     spyOn($.fn, 'removeClass').andCallThrough();
+    spyOn($.fn, 'on').andCallThrough();
 
     this.$form = $('<form></form>');
   });
@@ -17,6 +18,7 @@ describe('jqForm Plugin: Test Suite', function() {
     expect($.fn.jqForm.options).toEqual({
       disableSubmit: false,
       dataType: 'json',
+      ajaxSubmit: true,
       onSubmitSuccess: jasmine.any(Function),
       onSubmitError: jasmine.any(Function),
       onSubmitComplete: jasmine.any(Function)
@@ -42,6 +44,7 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(plugin.opts).toEqual({
         disableSubmit: true,
         dataType: 'json',
+        ajaxSubmit: true,
         onSubmitSuccess: jasmine.any(Function),
         onSubmitError: jasmine.any(Function),
         onSubmitComplete: jasmine.any(Function)
@@ -152,6 +155,42 @@ describe('jqForm Plugin: Test Suite', function() {
           ]
         }
       });
+    });
+  });
+
+  describe('jqForm: check ajax submission', function() {
+    it("should not submit form if ajax submission is disabled", function() {
+      this.$input = $('<input type="text"/>');
+      this.$form.append(this.$input);
+
+      this.$form.jqForm({
+        ajaxSubmit: false
+      });
+
+      this.$plugin = this.$form.data('jqForm');
+      spyOn(this.$plugin, 'validate').andReturn(true);
+      spyOn(this.$plugin, 'submit');
+
+      expect(this.$plugin.$form.on).toHaveBeenCalledWith('submit.jqForm', jasmine.any(Function));
+      this.$plugin.$form.trigger('submit');
+      expect(this.$plugin.submit).not.toHaveBeenCalled();
+    });
+
+    it("should submit form if ajax submission is enabled", function() {
+      this.$input = $('<input type="text"/>');
+      this.$form.append(this.$input);
+
+      this.$form.jqForm({
+        ajaxSubmit: true
+      });
+
+      this.$plugin = this.$form.data('jqForm');
+      spyOn(this.$plugin, 'validate').andReturn(true);
+      spyOn(this.$plugin, 'submit');
+
+      expect(this.$plugin.$form.on).toHaveBeenCalledWith('submit.jqForm', jasmine.any(Function));
+      this.$plugin.$form.trigger('submit');
+      expect(this.$plugin.submit).toHaveBeenCalled();
     });
   });
 

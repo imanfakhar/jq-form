@@ -552,7 +552,7 @@
         event.preventDefault();
         that.$form.addClass('submitted');
         var valid = that.validate();
-        if (valid) {
+        if (that.opts.ajaxSubmit && valid) {
           that.submit();
         }
       });
@@ -1076,6 +1076,7 @@
   $.fn.jqForm.options = {
     disableSubmit: false,
     dataType: 'json',
+    ajaxSubmit: true,
     onSubmitSuccess: noop,
     onSubmitError: noop,
     onSubmitComplete: noop
