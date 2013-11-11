@@ -900,16 +900,12 @@
     /**
      * Check select element.
      * @returns {boolean} false.
-     * @public
      */
     checkSelect: function() {
       return false;
     },
 
-    /**
-     * Clear form.
-     * @public
-     */
+    /** Clear form. */
     clear: function() {
       this.$form.find('input').each(function() {
         var $this = $(this);
@@ -920,10 +916,7 @@
       this.$form.find('select, textarea').val('');
     },
 
-    /**
-     * Destroy plugin internal datas.
-     * @public
-     */
+    /** Destroy plugin internal datas. */
     destroy: function() {
       this.unbind();
       this.$form = null;
