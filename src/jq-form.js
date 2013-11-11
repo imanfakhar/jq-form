@@ -409,6 +409,75 @@
     return h * 3600 + m * 60 + s;
   };
 
+  var extractKeys = function(name) {
+    var keys = name.split('.');
+
+    var results = [];
+    for (var i = 0, ln = keys.length; i < ln; ++i) {
+      var key = keys[i];
+      if (key.indexOf('[') >= 0) {
+        var subKeys = key.split('[');
+        results.push(subKeys[0]);
+
+        var nbSubKeys = subKeys.length;
+        for (var k = 1; k < nbSubKeys; ++k) {
+          var subKey = subKeys[k];
+          if (subKey[subKey.length - 1] === ']') {
+            subKey = '[' + subKey;
+          }
+          results.push(subKey);
+        }
+      }
+      else {
+        results.push(key);
+      }
+    }
+
+    return results;
+  };
+
+  var deepSet = function(obj, keys, value) {
+    var current = obj;
+    var ln = keys.length;
+    var last = keys[ln - 1];
+
+    if (ln > 1) {
+      var previous = current;
+      for (var i = 0; i < ln - 1; ++i) {
+        var key = keys[i];
+        current = previous[key];
+        if (current === undefined) {
+          var nextKey = i + 1 < ln ? keys[i + 1] : null;
+          var next = nextKey.charAt(0) === '[' ? [] : {};
+
+          if ($.isArray(previous)) {
+            // Push to array
+            key = key.replace(']', '').replace('[', '');
+            if (key === '') {
+              previous.push(next);
+            }
+            else {
+              previous[key] = next;
+            }
+          }
+          else {
+            // Set to object
+            previous[key] = next;
+          }
+          current = next;
+        }
+        previous = current;
+      }
+    }
+
+    if ($.isArray(current)) {
+      current.push(value);
+    }
+    else {
+      current[last] = value;
+    }
+  };
+
   /**
    * Form.
    * @param {jQuery} form jQuery form.
@@ -905,6 +974,22 @@
       return false;
     },
 
+    /**
+     * Serialize form to json object.
+     * @returns {object} Json object.
+     */
+    toJSON: function() {
+      var o = {};
+      var array = this.$form.serializeArray();
+      $.each(array, function(i, item) {
+        var name = item.name;
+        var value = item.value;
+        var keys = extractKeys(name);
+        deepSet(o, keys, value);
+      });
+      return o;
+    },
+
     /** Clear form. */
     clear: function() {
       this.$form.find('input').each(function() {
@@ -947,6 +1032,10 @@
 
     this.isValid = function() {
       return $(this).data(PLUGIN_NAME).validate();
+    };
+
+    this.toJSON = function() {
+      return $(this).data(PLUGIN_NAME).toJSON();
     };
 
     return this.each(function() {

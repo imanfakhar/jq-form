@@ -49,6 +49,112 @@ describe('jqForm Plugin: Test Suite', function() {
     });
   });
 
+  describe('jqForm: toJSON', function() {
+    it("should serialize form to json object with simple string values", function() {
+      this.$input = $('<input type="text" name="foo1" value="bar1"/>');
+      this.$select = $('<select name="foo2"><option value="bar2" selected></option></select>');
+
+      this.$form.append(this.$input);
+      this.$form.append(this.$select);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      var obj = this.$plugin.toJSON();
+      expect(obj).toEqual({
+        foo1: 'bar1',
+        foo2: 'bar2'
+      });
+    });
+
+    it("should serialize form to json object with nested object", function() {
+      this.$input1 = $('<input type="text" name="foo.foo1" value="bar1"/>');
+      this.$input2 = $('<input type="text" name="foobar" value="bar1"/>');
+      this.$select = $('<select name="foo.foo2"><option value="bar2" selected></option></select>');
+
+      this.$form.append(this.$input1);
+      this.$form.append(this.$input2);
+      this.$form.append(this.$select);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      var obj = this.$plugin.toJSON();
+      expect(obj).toEqual({
+        foobar: 'bar1',
+        foo: {
+          foo1: 'bar1',
+          foo2: 'bar2'
+        }
+      });
+    });
+
+    it("should serialize form to json object with nested object", function() {
+      this.$input1 = $('<input type="text" name="foo.foo1" value="bar1"/>');
+      this.$input2 = $('<input type="text" name="foobar" value="bar1"/>');
+      this.$select = $('<select name="foo.foo2"><option value="bar2" selected></option></select>');
+
+      this.$form.append(this.$input1);
+      this.$form.append(this.$input2);
+      this.$form.append(this.$select);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      var obj = this.$plugin.toJSON();
+      expect(obj).toEqual({
+        foobar: 'bar1',
+        foo: {
+          foo1: 'bar1',
+          foo2: 'bar2'
+        }
+      });
+    });
+
+    it("should serialize form to json object with arrays", function() {
+      this.$input1 = $('<input type="text" name="foo[]" value="bar1"/>');
+      this.$input2 = $('<input type="text" name="foo[]" value="bar2"/>');
+      this.$select = $('<select name="foobar"><option value="bar1" selected></option></select>');
+
+      this.$form.append(this.$input1);
+      this.$form.append(this.$input2);
+      this.$form.append(this.$select);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      var obj = this.$plugin.toJSON();
+      expect(obj).toEqual({
+        foobar: 'bar1',
+        foo: ['bar1', 'bar2']
+      });
+    });
+
+    it("should serialize form to json object with arrays", function() {
+      this.$input1 = $('<input type="text" name="foo.bar[0].name" value="bar1"/>');
+      this.$input2 = $('<input type="text" name="foo.bar[1].name" value="bar2"/>');
+      this.$select = $('<select name="foobar"><option value="bar1" selected></option></select>');
+
+      this.$form.append(this.$input1);
+      this.$form.append(this.$input2);
+      this.$form.append(this.$select);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      var obj = this.$plugin.toJSON();
+      expect(obj).toEqual({
+        foobar: 'bar1',
+        foo: {
+          bar: [
+            { name: 'bar1' },
+            { name: 'bar2' }
+          ]
+        }
+      });
+    });
+  });
+
   describe('jqForm: check user events', function() {
     beforeEach(function() {
       this.$input = $('<input type="text"/>');
