@@ -633,8 +633,10 @@
         var name = that.name($this);
 
         var $error = $('<div></div>').addClass('jq-form-error');
-        that.$errors[name] = $error;
-        $this.after($error);
+        if (!that.$errors.hasOwnProperty(name)) {
+          that.$errors[name] = $error;
+          $this.after($error);
+        }
       });
     },
 
@@ -646,7 +648,7 @@
       this.$items().each(function() {
         var $this = $(this);
         var error = that.check($this);
-        if (error && !$first) {
+        if (error.length > 0 && !$first) {
           $first = $this;
         }
       });
@@ -812,7 +814,7 @@
         }
       }
 
-      return formError;
+      return !formError;
     },
 
     /**
@@ -834,10 +836,12 @@
 
       var value;
 
-      if ($item.is('input:radio')) {
+      if ($item.is('input[type=radio]')) {
         var name = attr($item, 'name');
         $item = this.$form.find('input[name="' + name + '"]');
         value = $item.find(':selected').val();
+      } else if ($item.is('input[type=checkbox]')) {
+        value = attr($item, 'checked');
       } else {
         value = $.trim($item.val());
       }

@@ -456,7 +456,7 @@ describe('jqForm Plugin: Test Suite', function() {
 
       this.$plugin = this.$form.data('jqForm');
       var result = this.$plugin.validate();
-      expect(result).toBe(true);
+      expect(result).toBe(false);
       expect(this.$plugin.errors.$$custom).toBe(true);
     });
   });
@@ -470,7 +470,7 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
       var result = this.$plugin.validate();
-      expect(result).toBe(true);
+      expect(result).toBe(false);
       expect(this.$input.focus).toHaveBeenCalled();
     });
   });
@@ -687,7 +687,8 @@ describe('jqForm Plugin: Test Suite', function() {
 
     it('should add required error if checkbox is not checked', function() {
       this.$input.attr('required', 'required');
-      this.$input.val('');
+      this.$input.val('foo');
+      this.$input.removeAttr('checked');
 
       var errors = this.$plugin.check(this.$input);
 
