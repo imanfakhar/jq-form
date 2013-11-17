@@ -743,7 +743,6 @@
 
       this.errors[name] = errors.length > 0;
       this.checkForm();
-
       return errors;
     },
 

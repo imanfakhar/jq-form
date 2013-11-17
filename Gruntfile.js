@@ -24,6 +24,15 @@ module.exports = function(grunt) {
       }
     },
 
+    cssmin: {
+      minify: {
+        expand: true,
+        files: {
+          'build/<%= pkg.name %>.min.css': ['src/<%= pkg.name %>.css']
+        }
+      }
+    },
+
     karma: {
       unit: {
         configFile: 'karma.conf.js'
@@ -71,6 +80,9 @@ module.exports = function(grunt) {
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
+  // Load cssmin task
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+
   // Load Karma Plugin that provides "karma" task
   grunt.loadNpmTasks('grunt-karma');
 
@@ -96,7 +108,8 @@ module.exports = function(grunt) {
     'clean',
     'jshint',
     'karma:continuous',
-    'uglify'
+    'uglify',
+    'cssmin:minify'
   ]);
 
   grunt.registerTask('default', ['build']);
