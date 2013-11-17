@@ -512,6 +512,12 @@
     }
   };
 
+  /** Check if an item is a button */
+  var isButton = function($item) {
+    var type = $item.attr('type');
+    return type === 'button' || type === 'image' || type === 'reset' || $item.is('button');
+  };
+
   /**
    * Form.
    * @param {jQuery} form jQuery form.
@@ -524,12 +530,16 @@
     this.errors = {};
   };
 
+  //noinspection FunctionWithInconsistentReturnsJS,JSUnusedGlobalSymbols
   Form.prototype = {
     /** Initialize plugin. */
     init: function() {
-      // Disable autovalidation
-      if (!this.opts.autovalidate) {
-        this.$form.attr('autovalidate', 'false');
+      // Add relative position to form
+      this.$form.css('position', 'relative');
+
+      if (this.opts.showErrors) {
+        this.$form.attr('novalidate', 'novalidate');
+        this.appendErrorAreas();
       }
 
       this.bind();
@@ -541,12 +551,16 @@
       var that = this;
       this.$form.on('keyup.jqForm', function(event) {
         var $item = $(event.srcElement);
-        that.checkAndUpdateForm($item);
+        if (!isButton($item)) {
+          that.checkAndUpdateForm($item);
+        }
       });
 
       this.$form.on('focusout.jqForm', function(event) {
         var $item = $(event.srcElement);
-        that.checkAndUpdateForm($item);
+        if (!isButton($item)) {
+          that.checkAndUpdateForm($item);
+        }
       });
 
       this.$form.on('change.jqForm', function(event) {
@@ -567,22 +581,41 @@
       });
     },
 
+    /** Get items used by validation */
+    $items: function() {
+      return this.$form.find('input[type!="hidden"], select, textarea');
+    },
+
+    /** Append error boxes after each controls */
+    appendErrorAreas: function() {
+      this.$errors = {};
+
+      var that = this;
+      this.$items().each(function() {
+        var $this = $(this);
+        var name = that.name($this);
+
+        var $error = $('<div></div>').addClass('jq-form-error');
+        that.$errors[name] = $error;
+        $this.after($error);
+      });
+    },
+
     /** Validate form. */
     validate: function() {
       var that = this;
-      var first = null;
-      this.$form.find('input, select, textarea').each(function() {
+      var $first = null;
+
+      this.$items().each(function() {
         var $this = $(this);
-        if (!$this.is('input') || $this.attr('type') !== 'hidden') {
-          var error = that.check($this);
-          if (error && !first) {
-            first = $this;
-          }
+        var error = that.check($this);
+        if (error && !$first) {
+          $first = $this;
         }
       });
 
-      if (first) {
-        first.focus();
+      if ($first) {
+        $first.eq(0).focus();
       }
 
       return this.checkForm();
@@ -629,36 +662,78 @@
       this.$form.off('.jqForm');
     },
 
-    /**
-     * Check form element.
-     * @param {jQuery} $item jQuery item.
-     */
-    check: function($item) {
+    /** Get name attribute of item */
+    name: function($item) {
       var name = $item.attr(DATA_NAME);
       if (!name) {
         name = $item.attr('name') || '';
         name = toCamelCase(name);
         $item.attr(DATA_NAME, name);
       }
+      return name;
+    },
 
+    /**
+     * Check form element.
+     * @param {jQuery} $item jQuery item.
+     */
+    check: function($item) {
+      this.clearMessage($item);
       removeClasses($item, CSS_ERROR);
 
-      var tagName = ($item.get(0).tagName || 'null').toLowerCase();
-
       // Check required flag (valid for every tags)
-      var error = this.checkRequired($item);
+      var requiredError = this.checkRequired($item);
 
       // Validation by tag
+      var tagName = ($item.get(0).tagName || 'null').toLowerCase();
       var fn = 'check' + capitalize(tagName);
-      error = (this[fn] ? this[fn]($item) : this.checkText($item)) || error;
+      var itemErrors = (this[fn] ? this[fn]($item) : this.checkText($item));
 
-      if (error) {
-        addClasses($item, CSS_ERROR);
+      // Array of found errors
+      var errors = [];
+
+      // Add required error
+      if (requiredError) {
+        errors = errors.concat(requiredError);
       }
 
-      this.errors[name] = error;
+      // Add other found errors
+      errors = errors.concat(itemErrors);
+
+      var name = this.name($item);
+
+      // Add error class and display message
+      if (errors.length > 0) {
+        addClasses($item, CSS_ERROR);
+
+        // Display error message
+        var firstError = errors[0];
+        if (this.$errors[name]) {
+          var position = $item.position();
+          var heightItem = $item.outerHeight();
+          var widthItem = $item.outerWidth();
+
+          var top = position.top + heightItem + 5;
+
+          var $error = this.$errors[name];
+          $error
+            .css({
+              'display': '',
+              'top': top
+            })
+            .html(firstError.label);
+
+          var widthLabel = $error.outerWidth();
+          var diff = widthItem - widthLabel;
+          var left = position.left + (diff / 2);
+          $error.css('left', left);
+        }
+      }
+
+      this.errors[name] = errors.length > 0;
       this.checkForm();
-      return error;
+
+      return errors;
     },
 
     /**
@@ -677,7 +752,8 @@
         }
       }
 
-      this.errors.$$custom = undefined;
+      delete this.errors.$$custom;
+
       var customIsValid = this.opts.isValid.call(this, this.$form, this.errors);
       if (!customIsValid) {
         this.errors.$$custom = true;
@@ -709,7 +785,7 @@
     /**
      * Check required item.
      * @param {jQuery} $item jQuery item.
-     * @return {boolean} True if required error is triggered, false otherwise.
+     * @return {object?} Error.
      */
     checkRequired: function($item) {
       removeClasses($item, CSS_ERROR_REQUIRED);
@@ -717,16 +793,42 @@
       var value = $.trim($item.val());
       if (isRequired($item) && value === '') {
         addClasses($item, CSS_ERROR_REQUIRED);
-        return true;
+        return this.buildError('required');
+      }
+    },
+
+    /** Clear error message */
+    clearMessage: function($item) {
+      if (this.$errors) {
+        var name = this.name($item);
+        this.$errors[name]
+          .hide()
+          .html('');
+      }
+    },
+
+    /** Build error message from key and optional replacements */
+    buildError: function(key, replacements) {
+      var message = this.opts.messages[key];
+
+      if (replacements) {
+        for (var i in replacements) {
+          if (replacements.hasOwnProperty(i)) {
+            message = message.replace('{{' + i + '}}', replacements[i]);
+          }
+        }
       }
 
-      return false;
+      return {
+        key: key,
+        label: message
+      };
     },
 
     /**
      * Check input element.
      * @param {jQuery} $input Input element.
-     * @returns {boolean} True if input element is invalid, false otherwise.
+     * @returns {Array} Array of detected errors.
      */
     checkInput: function($input) {
       var type = $input.attr('data-type') || $input.attr('type') || 'text';
@@ -739,47 +841,57 @@
     /**
      * Check text errors (min-length, max-length, pattern).
      * @param {jQuery} $item jQuery element.
-     * @returns {boolean} True if element is not valid, false otherwise.
+     * @returns {Array} Array of detected errors.
      */
     checkText: function($item) {
       removeClasses($item, CSS_ERROR_MIN_LENGTH, CSS_ERROR_MAX_LENGTH, CSS_ERROR_SAME_AS, CSS_ERROR_PATTERN);
 
-      var error = false;
+      var errors = [];
+
       var value = $item.val();
       var trimValue = $.trim(value);
       var length = trimValue.length;
 
-      if (length < minLength($item)) {
-        error = true;
+      var minln = minLength($item);
+      if (length < minln) {
         addClasses($item, CSS_ERROR_MIN_LENGTH);
+        errors.push(this.buildError('minlength', {
+          count: minln
+        }));
       }
 
-      if (length > maxLength($item)) {
-        error = true;
+      var maxln = maxLength($item);
+      if (length > maxln) {
         addClasses($item, CSS_ERROR_MAX_LENGTH);
+        errors.push(this.buildError('maxlength', {
+          count: maxln
+        }));
       }
 
       if (!pattern($item).test(trimValue)) {
-        error = true;
         addClasses($item, CSS_ERROR_PATTERN);
+        errors.push(this.buildError('pattern'));
       }
 
       var sameAs = $item.attr('data-same-as');
       if (sameAs) {
-        var valueToCompare = $(sameAs).val();
+        var $sameAs = $(sameAs);
+        var valueToCompare = $sameAs.val();
         if (value !== valueToCompare) {
-          error = true;
           addClasses($item, CSS_ERROR_SAME_AS);
+          errors.push(this.buildError('sameAs', {
+            item: $sameAs.attr('title')
+          }));
         }
       }
 
-      return error;
+      return errors;
     },
 
     /**
      * Check text input.
      * @param {jQuery} $input Input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} Detected errors.
      */
     checkInputText: function($input) {
       return this.checkText($input);
@@ -788,7 +900,7 @@
     /**
      * Check password input.
      * @param {jQuery} $input Password input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} Detected errors.
      */
     checkInputPassword: function($input) {
       return this.checkText($input);
@@ -797,10 +909,10 @@
     /**
      * Check email input.
      * @param {jQuery} $input Email input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} Detected errors.
      */
     checkInputEmail: function($input) {
-      var error = this.checkText($input);
+      var errors = this.checkText($input);
 
       var value = $input.val();
 
@@ -809,43 +921,44 @@
       for (var i = 0, ln = values.length; i < ln; ++i) {
         var trimValue = $.trim(values[i]);
         if (trimValue && !PATTERN_EMAIL.test(trimValue)) {
-          error = true;
           addClasses($input, CSS_ERROR_EMAIL_PATTERN);
+          errors.push(this.buildError('email'));
         }
       }
 
       removeClasses($input, CSS_ERROR_EMAIL_MULTIPLE);
       var multiple = $input.attr('multiple') !== undefined;
       if (!multiple && value.split(',').length > 1) {
-        error = true;
         addClasses($input, CSS_ERROR_EMAIL_MULTIPLE);
+        errors.push(this.buildError('emailMultiple'));
       }
 
-      return error;
+      return errors;
     },
 
     /**
      * Check url input.
      * @param {jQuery} $input Url input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} Array of detected errors.
      */
     checkInputUrl: function($input) {
-      var error = this.checkText($input);
+      var errors = this.checkText($input);
+
       var value = $.trim($input.val());
 
       removeClasses($input, CSS_ERROR_URL_PATTERN);
       if (value && !PATTERN_URL.test(value)) {
-        error = true;
         addClasses($input, CSS_ERROR_URL_PATTERN);
+        errors.push(this.buildError('url'));
       }
 
-      return error;
+      return errors;
     },
 
     /**
      * Check number input.
      * @param {jQuery} $input Number input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} Array of detected errors.
      */
     checkInputNumber: function($input) {
       var value = parseFloat($input.val());
@@ -861,25 +974,30 @@
         max = Number.MAX_VALUE;
       }
 
-      var error = false;
+      var errors = [];
+
       removeClasses($input, CSS_ERROR_MIN, CSS_ERROR_MAX);
       if (value < min) {
-        error = true;
         addClasses($input, CSS_ERROR_MIN);
+        errors.push(this.buildError('min', {
+          min: min
+        }));
       }
 
       if (value > max) {
-        error = true;
         addClasses($input, CSS_ERROR_MAX);
+        errors.push(this.buildError('max', {
+          max: max
+        }));
       }
 
-      return error;
+      return errors;
     },
 
     /**
      * Check range input.
      * @param {jQuery} $input Range input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} True if input is not valid, false otherwise.
      */
     checkInputRange: function($input) {
       return this.checkInputNumber($input);
@@ -889,7 +1007,7 @@
      * Check date for a given pattern.
      * @param {jQuery} $input Input element.
      * @param {RegExp} pattern Pattern.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} True if input is not valid, false otherwise.
      */
     checkDateValue: function($input, pattern) {
       removeClasses($input, CSS_ERROR_DATE_PATTERN, CSS_ERROR_DATE_INVALID, CSS_ERROR_MIN, CSS_ERROR_MAX);
@@ -897,26 +1015,26 @@
       var value = $.trim($input.val());
       var date = null;
 
-      var error = false;
+      var errors = [];
 
       if (value) {
         if (!pattern.test(value)) {
-          error = true;
           $input.addClass(CSS_ERROR_DATE_PATTERN);
+          errors.push(this.buildError('date'));
         }
         else {
           var values = value.split('-');
           var day = values.length === 3 ? values[2] : '01';
           if (!isDateValid(values[0], values[1], day)) {
-            error = true;
             $input.addClass(CSS_ERROR_DATE_INVALID);
+            errors.push(this.buildError('date'));
           }
 
           date = new Date(values[0] + '-' + values[1] + '-' + day);
         }
       }
 
-      if (value && !error) {
+      if (value && !errors.length) {
         var timestamp = date.getTime();
         var min = $.trim($input.attr('min'));
         var max = $.trim($input.attr('max'));
@@ -924,27 +1042,31 @@
         if (min) {
           min = min.length === 7 ? min + '-01' : min;
           if (timestamp < new Date(min).getTime()) {
-            error = true;
             $input.addClass(CSS_ERROR_MIN);
+            errors.push(this.buildError('min', {
+              min: min
+            }));
           }
         }
 
         if (max) {
           max = max.length === 7 ? max + '-01' : max;
           if (timestamp > new Date(max).getTime()) {
-            error = true;
             $input.addClass(CSS_ERROR_MAX);
+            errors.push(this.buildError('max', {
+              max: max
+            }));
           }
         }
       }
 
-      return error;
+      return errors;
     },
 
     /**
      * Check date input.
      * @param {jQuery} $input Date input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} True if input is not valid, false otherwise.
      */
     checkInputDate: function($input) {
       return this.checkDateValue($input, PATTERN_FULL_DATE);
@@ -953,7 +1075,7 @@
     /**
      * Check month input.
      * @param {jQuery} $input Month input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} True if input is not valid, false otherwise.
      */
     checkInputMonth: function($input) {
       return this.checkDateValue($input, PATTERN_FULL_MONTH);
@@ -962,63 +1084,72 @@
     /**
      * Check time input.
      * @param {jQuery} $input Time input.
-     * @returns {boolean} True if input is not valid, false otherwise.
+     * @returns {Array} True if input is not valid, false otherwise.
      */
     checkInputTime: function($input) {
       removeClasses($input, CSS_ERROR_TIME_PATTERN, CSS_ERROR_TIME_INVALID, CSS_ERROR_MIN, CSS_ERROR_MAX);
 
       var value = $.trim($input.val());
       var seconds = 0;
-      var error = false;
+
+      var errors = [];
+
       if (value) {
         if (!PATTERN_TIME.test(value)) {
-          error = true;
           addClasses($input, CSS_ERROR_TIME_PATTERN);
+          errors.push(this.buildError('time'));
         }
         else {
           var values = value.split(':');
+
           var hour = values[0];
           var minute = values[1];
           var second = values.length === 3 ? values[2] : '00';
           second = second.split('.')[0];
+
           if (!isTimeValid(hour, minute, second)) {
-            error = true;
             addClasses($input, CSS_ERROR_TIME_INVALID);
+            errors.push(this.buildError('time'));
           }
+
           seconds = toSeconds([hour, minute, second]);
         }
       }
 
-      if (value && !error) {
+      if (value && !errors.length) {
         var min = $input.attr('min');
         var max = $input.attr('max');
 
         if (min) {
           var minSeconds = toSeconds(min.split(':'));
           if (seconds < minSeconds) {
-            error = true;
             addClasses($input, CSS_ERROR_MIN);
+            errors.push(this.buildError('min', {
+              min: min
+            }));
           }
         }
 
         if (max) {
           var maxSeconds = toSeconds(max.split(':'));
           if (seconds > maxSeconds) {
-            error = true;
             addClasses($input, CSS_ERROR_MAX);
+            errors.push(this.buildError('max', {
+              max: max
+            }));
           }
         }
       }
 
-      return error;
+      return errors;
     },
 
     /**
      * Check select element.
-     * @returns {boolean} false.
+     * @returns {Array} Detected errors.
      */
     checkSelect: function() {
-      return false;
+      return [];
     },
 
     /**
@@ -1054,6 +1185,7 @@
       this.$form = null;
       this.opts = null;
       this.errors = null;
+      this.$errors = null;
     }
   };
 
@@ -1104,11 +1236,25 @@
     disableSubmit: false,
     dataType: 'json',
     ajaxSubmit: true,
-    autovalidate: false,
-    isValid: noop,
+    isValid: returnTrue,
     onSubmitSuccess: noop,
     onSubmitError: noop,
-    onSubmitComplete: noop
+    onSubmitComplete: noop,
+    showErrors: true,
+    messages: {
+      required: 'Please fill out this field',
+      pattern: 'Please match the requested format',
+      email: 'Please enter an email address',
+      date: 'Please enter a date',
+      time: 'Please enter a time',
+      emailMultiple: 'Multiple email address is not allowed',
+      url: 'Please enter an URL',
+      minlength: 'Text must be at least {{count}} characters',
+      maxlength: 'Text must be at most {{count}} characters',
+      min: 'Value must be greater than or equal to {{min}}',
+      max: 'Value must be less than or equal to {{max}}',
+      sameAs: 'Value must match {{item}}'
+    }
   };
 
 }));

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script type="text/javascript" src="jquery/jquery.js"></script>
-  <script type="text/javascript" src="jq-form.js"></script>
-
   <link rel="stylesheet" href="bootstrap.css/css/bootstrap.css"/>
   <link rel="stylesheet" href="jq-form.css"/>
+
+  <script type="text/javascript" src="jquery/jquery.js"></script>
+  <script type="text/javascript" src="jq-form.js"></script>
 </head>
 <body>
 
-<form id="test-form" name="my-form" action="#" novalidate>
+<form id="test-form" name="my-form" action="#">
   <div>
     <label>Input text (required, min-length = 3, max-length=10, pattern=[A-Za-z]+) :</label>
     <input type="text" name="input-text" required data-min-length="3" maxlength="10" pattern="[A-Za-z]+"/>
