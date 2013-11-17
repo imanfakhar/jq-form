@@ -443,6 +443,11 @@
     return h * 3600 + m * 60 + s;
   };
 
+  /**
+   * Extract all keys in given string (keys may be separated with a dot sign or between brackets).
+   * @param {string} name Keys as a string value.
+   * @returns {Array} Array of found keys.
+   */
   var extractKeys = function(name) {
     var keys = name.split('.');
 
@@ -470,6 +475,12 @@
     return results;
   };
 
+  /**
+   * Set a value on given field in object.
+   * @param {object} obj Object.
+   * @param {Array<string>} keys Keys.
+   * @param {*} value Value to set.
+   */
   var deepSet = function(obj, keys, value) {
     var current = obj;
     var ln = keys.length;
