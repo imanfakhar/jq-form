@@ -247,11 +247,26 @@
 
   /**
    * Check if an element is required.
-   * @param {jQuery} $item Element to check.
+   * @param {jQuery...} $item Elements to check.
    * @returns {boolean} True if element is required, false otherwise.
    */
-  var isRequired = function($item) {
-    return attr($item, 'required') !== undefined;
+  var isRequired = function($items) {
+    if (!$.isArray($items)) {
+      $items = [$items];
+    }
+
+    for (var i = 0, ln = $items.length; i < ln; ++i) {
+      if (attr($items[i], 'required') !== undefined) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  /** Check if a value is empty (null, undefined or empty string) */
+  var isEmpty = function(val) {
+    return val === null || val === undefined || val === '';
   };
 
   /** Parse given value to an integer */
@@ -817,8 +832,17 @@
     checkRequired: function($item) {
       removeClasses($item, CSS_ERROR_REQUIRED);
 
-      var value = $.trim($item.val());
-      if (isRequired($item) && value === '') {
+      var value;
+
+      if ($item.is('input:radio')) {
+        var name = attr($item, 'name');
+        $item = this.$form.find('input[name="' + name + '"]');
+        value = $item.find(':selected').val();
+      } else {
+        value = $.trim($item.val());
+      }
+
+      if (isRequired($item) && isEmpty(value)) {
         addClasses($item, CSS_ERROR_REQUIRED);
         return this.buildError('required');
       }
@@ -1028,6 +1052,22 @@
      */
     checkInputRange: function($input) {
       return this.checkInputNumber($input);
+    },
+
+    /**
+     * Check checkbox inputs.
+     * @returns {Array} Empty array.
+     */
+    checkInputCheckbox: function() {
+      return [];
+    },
+
+    /**
+     * Check checkbox radios.
+     * @returns {Array} Empty array.
+     */
+    checkInputRadio: function() {
+      return [];
     },
 
     /**

@@ -675,6 +675,96 @@ describe('jqForm Plugin: Test Suite', function() {
     });
   });
 
+  describe('jqForm: check checkbox input', function() {
+    beforeEach(function() {
+      this.$input = $('<input type="checkbox" name="input-checkbox"/>');
+      this.$form.append(this.$input);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+      this.$errors = this.$plugin.$errors;
+    });
+
+    it('should add required error if checkbox is not checked', function() {
+      this.$input.attr('required', 'required');
+      this.$input.val('');
+
+      var errors = this.$plugin.check(this.$input);
+
+      expect(this.$input.attr('data-name')).toBe('inputCheckbox');
+      expect(this.$input.hasClass('error')).toBe(true);
+      expect(this.$input.hasClass('error-required')).toBe(true);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputCheckbox']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputCheckbox: true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'required',
+        label: 'Please fill out this field'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputCheckbox'].css('display')).toBe('block');
+      expect(this.$errors['inputCheckbox'].html()).toBe('Please fill out this field');
+      expect(this.$errors['inputCheckbox'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputCheckbox'].css).toHaveBeenCalledWith('left', 20);
+    });
+  });
+
+  describe('jqForm: check radios input', function() {
+    beforeEach(function() {
+      this.$radio1 = $('<input type="radio" name="input-radio" value="foo"/>');
+      this.$radio2 = $('<input type="radio" name="input-radio" value="bar"/>');
+      this.$form.append(this.$radio1);
+      this.$form.append(this.$radio2);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+      this.$errors = this.$plugin.$errors;
+    });
+
+    it('should add required error if no radios are selected', function() {
+      this.$radio1.attr('required', 'required');
+      this.$radio2.attr('required', 'required');
+
+      var errors = this.$plugin.check(this.$radio1);
+
+      expect(this.$radio1.attr('data-name')).toBe('inputRadio');
+      expect(this.$radio1.hasClass('error')).toBe(true);
+      expect(this.$radio1.hasClass('error-required')).toBe(true);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputRadio']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputRadio: true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'required',
+        label: 'Please fill out this field'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputRadio'].css('display')).toBe('block');
+      expect(this.$errors['inputRadio'].html()).toBe('Please fill out this field');
+      expect(this.$errors['inputRadio'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputRadio'].css).toHaveBeenCalledWith('left', 20);
+    });
+  });
+
   describe('jqForm: check textarea', function() {
     beforeEach(function() {
       this.$textarea = $('<textarea name="textarea"></textarea>');
