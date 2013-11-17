@@ -580,7 +580,6 @@
       }
 
       this.bind();
-      this.validate();
     },
 
     /** Bind user events. */
