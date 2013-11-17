@@ -239,13 +239,24 @@
    */
   var PATTERN_TIME = new RegExp('^' + TIME_UNIT + ':' + TIME_UNIT + '(:' + TIME_UNIT + ')?(\\.' + TIME_SECFRAG + ')?$');
 
+  var attr = function($item, name, value) {
+    return arguments.length === 3 ?
+      $item.attr(name, value) :
+      $item.attr(name);
+  };
+
   /**
    * Check if an element is required.
    * @param {jQuery} $item Element to check.
    * @returns {boolean} True if element is required, false otherwise.
    */
   var isRequired = function($item) {
-    return $item.attr('required') !== undefined;
+    return attr($item, 'required') !== undefined;
+  };
+
+  /** Parse given value to an integer */
+  var toInt = function(val) {
+    return parseInt(val, 10);
   };
 
   /**
@@ -254,7 +265,7 @@
    * @returns {number} Min length value.
    */
   var minLength = function($item) {
-    return parseInt($item.attr('data-min-length'), 10) || 0;
+    return toInt(attr($item, 'data-min-length')) || 0;
   };
 
   /**
@@ -263,7 +274,7 @@
    * @returns {number} Max length value.
    */
   var maxLength = function($item) {
-    return parseInt($item.attr('maxlength'), 10) || Number.MAX_VALUE;
+    return toInt(attr($item, 'maxlength')) || Number.MAX_VALUE;
   };
 
   /**
@@ -272,7 +283,7 @@
    * @returns {RegExp} RegExp value.
    */
   var pattern = function($item) {
-    var regexp = $item.attr('pattern') || '.*';
+    var regexp = attr($item, 'pattern') || '.*';
     return new RegExp(regexp);
   };
 
@@ -377,9 +388,9 @@
    * @returns {boolean} True if date is valid, false otherwise.
    */
   var isDateValid = function(year, month, day) {
-    year = parseInt(year, 10) || 0;
-    month = (parseInt(month, 10) || 0) - 1;
-    day = parseInt(day, 10) || 0;
+    year = toInt(year) || 0;
+    month = (toInt(month) || 0) - 1;
+    day = toInt(day) || 0;
 
     if (!isYearValid(year) || !isMonthValid(month) || !isDayValid(day)) {
       return false;
@@ -424,9 +435,9 @@
    * @returns {boolean} True if time is valid, false otherwise.
    */
   var isTimeValid = function(hour, minute, second) {
-    hour = parseInt(hour, 10) || 0;
-    minute = parseInt(minute, 10) || 0;
-    second = parseInt(second, 10) || 0;
+    hour = toInt(hour) || 0;
+    minute = toInt(minute) || 0;
+    second = toInt(second) || 0;
     return isHourValid(hour) && isMinuteValid(minute) && isSecondValid(second);
   };
 
@@ -437,9 +448,9 @@
    */
   var toSeconds = function(time) {
     var array = $.isArray(time) ? time : time.split(':');
-    var h = parseInt(array[0], 10);
-    var m = parseInt(array[1], 10);
-    var s = array.length === 3 ? parseInt(array[2], 10) : 0;
+    var h = toInt(array[0]);
+    var m = toInt(array[1]);
+    var s = array.length === 3 ? toInt(array[2]) : 0;
     return h * 3600 + m * 60 + s;
   };
 
@@ -525,7 +536,7 @@
 
   /** Check if an item is a button */
   var isButton = function($item) {
-    var type = $item.attr('type');
+    var type = attr($item, 'type');
     return type === 'button' || type === 'image' || type === 'reset' || $item.is('button');
   };
 
@@ -549,7 +560,7 @@
       this.$form.css('position', 'relative');
 
       if (this.opts.showErrors) {
-        this.$form.attr('novalidate', 'novalidate');
+        attr(this.$form, 'novalidate', 'novalidate');
         this.appendErrorAreas();
       }
 
@@ -635,32 +646,36 @@
     /** Submit form. */
     submit: function() {
       if (!this.xhr) {
-        var method = this.$form.attr('method');
-        var url = this.$form.attr('action');
-        var datas = this.$form.serialize();
-        var $submit = this.$form.find(SUBMIT_BTNS);
+        var $form = this.$form;
 
-        $submit.addClass('disabled').attr('disabled', 'disabled');
+        var method = attr($form, 'method');
+        var url = attr($form, 'action');
+        var datas = $form.serialize();
+        var $submit = $form.find(SUBMIT_BTNS);
 
-        this.xhr = $.ajax({
+        $submit
+          .addClass('disabled')
+          .attr('disabled', 'disabled');
+
+        var that = this;
+
+        that.xhr = $.ajax({
           url: url,
           type: method,
-          dataType: this.opts.dataType,
+          dataType: that.opts.dataType,
           contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
           datas: datas
         });
 
-        var that = this;
-
-        this.xhr.done(function() {
+        that.xhr.done(function() {
           that.opts.onSubmitSuccess.apply(null, arguments);
         });
 
-        this.xhr.fail(function() {
+        that.xhr.fail(function() {
           that.opts.onSubmitError.apply(null, arguments);
         });
 
-        this.xhr.always(function() {
+        that.xhr.always(function() {
           that.opts.onSubmitComplete.apply(null, arguments);
           that.xhr = null;
           $submit.removeClass('disabled').removeAttr('disabled');
@@ -675,11 +690,11 @@
 
     /** Get name attribute of item */
     name: function($item) {
-      var name = $item.attr(DATA_NAME);
+      var name = attr($item, DATA_NAME);
       if (!name) {
-        name = $item.attr('name') || '';
+        name = attr($item, 'name') || '';
         name = toCamelCase(name);
-        $item.attr(DATA_NAME, name);
+        attr($item, DATA_NAME, name);
       }
       return name;
     },
@@ -689,16 +704,18 @@
      * @param {jQuery} $item jQuery item.
      */
     check: function($item) {
-      this.clearMessage($item);
+      var that = this;
+
+      that.clearMessage($item);
       removeClasses($item, CSS_ERROR);
 
       // Check required flag (valid for every tags)
-      var requiredError = this.checkRequired($item);
+      var requiredError = that.checkRequired($item);
 
       // Validation by tag
       var tagName = ($item.get(0).tagName || 'null').toLowerCase();
       var fn = 'check' + capitalize(tagName);
-      var itemErrors = (this[fn] ? this[fn]($item) : this.checkText($item));
+      var itemErrors = (that[fn] ? that[fn]($item) : that.checkText($item));
 
       // Array of found errors
       var errors = [];
@@ -711,7 +728,7 @@
       // Add other found errors
       errors = errors.concat(itemErrors);
 
-      var name = this.name($item);
+      var name = that.name($item);
 
       // Add error class and display message
       if (errors.length > 0) {
@@ -719,14 +736,14 @@
 
         // Display error message
         var firstError = errors[0];
-        if (this.$errors[name]) {
+        if (that.$errors[name]) {
           var position = $item.position();
           var heightItem = $item.outerHeight();
           var widthItem = $item.outerWidth();
 
           var top = position.top + heightItem + 5;
 
-          var $error = this.$errors[name];
+          var $error = that.$errors[name];
           $error
             .css({
               'display': '',
@@ -841,7 +858,7 @@
      * @returns {Array} Array of detected errors.
      */
     checkInput: function($input) {
-      var type = $input.attr('data-type') || $input.attr('type') || 'text';
+      var type = attr($input, 'data-type') || attr($input, 'type') || 'text';
       var fn = 'checkInput' + capitalize(type);
       return this[fn] ?
         this[fn]($input) :
@@ -883,14 +900,14 @@
         errors.push(this.buildError('pattern'));
       }
 
-      var sameAs = $item.attr('data-same-as');
+      var sameAs = attr($item, 'data-same-as');
       if (sameAs) {
         var $sameAs = $(sameAs);
         var valueToCompare = $sameAs.val();
         if (value !== valueToCompare) {
           addClasses($item, CSS_ERROR_SAME_AS);
           errors.push(this.buildError('sameAs', {
-            item: $sameAs.attr('title')
+            item: attr($sameAs, 'title')
           }));
         }
       }
@@ -937,7 +954,7 @@
       }
 
       removeClasses($input, CSS_ERROR_EMAIL_MULTIPLE);
-      var multiple = $input.attr('multiple') !== undefined;
+      var multiple = attr($input, 'multiple') !== undefined;
       if (!multiple && value.split(',').length > 1) {
         addClasses($input, CSS_ERROR_EMAIL_MULTIPLE);
         errors.push(this.buildError('emailMultiple'));
@@ -973,8 +990,8 @@
     checkInputNumber: function($input) {
       var value = parseFloat($input.val());
 
-      var min = parseFloat($input.attr('min'));
-      var max = parseFloat($input.attr('max'));
+      var min = parseFloat(attr($input, 'min'));
+      var max = parseFloat(attr($input, 'max'));
 
       if (min === undefined) {
         min = Number.MIN_VALUE;
@@ -1046,8 +1063,8 @@
 
       if (value && !errors.length) {
         var timestamp = date.getTime();
-        var min = $.trim($input.attr('min'));
-        var max = $.trim($input.attr('max'));
+        var min = $.trim(attr($input, 'min'));
+        var max = $.trim(attr($input, 'max'));
 
         if (min) {
           min = min.length === 7 ? min + '-01' : min;
@@ -1127,8 +1144,8 @@
       }
 
       if (value && !errors.length) {
-        var min = $input.attr('min');
-        var max = $input.attr('max');
+        var min = attr($input, 'min');
+        var max = attr($input, 'max');
 
         if (min) {
           var minSeconds = toSeconds(min.split(':'));
@@ -1182,7 +1199,7 @@
     clear: function() {
       this.$form.find('input').each(function() {
         var $this = $(this);
-        if ($(this).attr('type') !== 'hidden') {
+        if (attr($(this), 'type') !== 'hidden') {
           $this.val('');
         }
       });
@@ -1191,43 +1208,43 @@
 
     /** Destroy plugin internal datas. */
     destroy: function() {
-      this.unbind();
-      this.$form = null;
-      this.opts = null;
-      this.errors = null;
-      this.$errors = null;
+      var that = this;
+      that.unbind();
+      that.$form = that.opts = that.errors = that.$errors = null;
     }
   };
 
   $.fn.jqForm = function(settings) {
-    this.destroy = function() {
-      $(this).data(PLUGIN_NAME).destroy();
-      return this;
+    var self = this;
+
+    self.destroy = function() {
+      $(self).data(PLUGIN_NAME).destroy();
+      return self;
     };
 
-    this.clear = function() {
-      $(this).data(PLUGIN_NAME).clear();
-      return this;
+    self.clear = function() {
+      $(self).data(PLUGIN_NAME).clear();
+      return self;
     };
 
-    this.validate = function() {
-      this.isValid();
-      return this;
+    self.validate = function() {
+      self.isValid();
+      return self;
     };
 
-    this.errors = function() {
-      return $(this).data(PLUGIN_NAME).errors;
+    self.errors = function() {
+      return $(self).data(PLUGIN_NAME).errors;
     };
 
-    this.isValid = function() {
-      return $(this).data(PLUGIN_NAME).validate();
+    self.isValid = function() {
+      return $(self).data(PLUGIN_NAME).validate();
     };
 
-    this.toJSON = function() {
-      return $(this).data(PLUGIN_NAME).toJSON();
+    self.toJSON = function() {
+      return $(self).data(PLUGIN_NAME).toJSON();
     };
 
-    return this.each(function() {
+    return self.each(function() {
       var form = $(this).data(PLUGIN_NAME);
       if (!form) {
         var opts = $.extend({}, $.fn.jqForm.options);
