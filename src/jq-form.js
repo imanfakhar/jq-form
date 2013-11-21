@@ -42,6 +42,15 @@
   /** Namespace used to bind user events. */
   var NAMESPACE = '.jqForm';
 
+  /** Disabled label */
+  var DISABLED = 'disabled';
+
+  /** 'novalidate' label */
+  var NO_VALIDATE = 'novalidate';
+
+  /** Type label */
+  var TYPE = 'type';
+
   /** Function that returns always true. */
   var returnTrue = function() {
     return true;
@@ -277,6 +286,9 @@
   var toInt = function(val) {
     return parseInt(val, 10);
   };
+
+  /* Parse given value to a float */
+  var toFloat = parseFloat;
 
   /**
    * Get min-length value of element.
@@ -555,7 +567,7 @@
 
   /** Check if an item is a button */
   var isButton = function($item) {
-    var type = attr($item, 'type');
+    var type = attr($item, TYPE);
     return type === 'button' || type === 'image' || type === 'reset' || $item.is('button');
   };
 
@@ -575,45 +587,43 @@
   Form.prototype = {
     /** Initialize plugin. */
     init: function() {
-      // Add relative position to form
-      this.$form.css('position', 'relative');
+      var that = this;
+      var $form = that.$form;
 
-      if (this.opts.showErrors) {
-        attr(this.$form, 'novalidate', 'novalidate');
-        this.appendErrorAreas();
+      // Add relative position to form
+      $form.css('position', 'relative');
+
+      if (that.opts.showErrors) {
+        attr($form, NO_VALIDATE, NO_VALIDATE);
+        that.appendErrorAreas();
       }
 
-      this.bind();
+      that.bind();
     },
 
     /** Bind user events. */
     bind: function() {
       var that = this;
-      this.$form.on('keyup' + NAMESPACE, function(event) {
+      var $form = that.$form;
+
+      $form.on('keyup' + NAMESPACE + ' focusout' + NAMESPACE, function(event) {
         var $item = $(event.srcElement);
         if (!isButton($item)) {
-          that.checkAndUpdateForm($item);
+          that.check($item);
         }
       });
 
-      this.$form.on('focusout' + NAMESPACE, function(event) {
+      $form.on('change' + NAMESPACE, function(event) {
         var $item = $(event.srcElement);
-        if (!isButton($item)) {
-          that.checkAndUpdateForm($item);
-        }
-      });
-
-      this.$form.on('change' + NAMESPACE, function(event) {
-        var $item = $(event.srcElement);
-        that.checkAndUpdateForm($item);
+        that.check($item);
 
         addClasses($item, CSS_DIRTY);
-        addClasses(that.$form, CSS_DIRTY);
+        addClasses($form, CSS_DIRTY);
       });
 
-      this.$form.on('submit' + NAMESPACE, function(event) {
+      $form.on('submit' + NAMESPACE, function(event) {
         event.preventDefault();
-        that.$form.addClass('submitted');
+        $form.addClass('submitted');
         var valid = that.validate();
         if (that.opts.ajaxSubmit && valid) {
           that.submit();
@@ -628,10 +638,11 @@
 
     /** Append error boxes after each controls */
     appendErrorAreas: function() {
-      this.$errors = {};
-
       var that = this;
-      this.$items().each(function() {
+
+      that.$errors = {};
+
+      that.$items().each(function() {
         var $this = $(this);
         var name = that.name($this);
 
@@ -648,7 +659,7 @@
       var that = this;
       var $first = null;
 
-      this.$items().each(function() {
+      that.$items().each(function() {
         var $this = $(this);
         var error = that.check($this);
         if (error.length > 0 && !$first) {
@@ -660,13 +671,15 @@
         $first.eq(0).focus();
       }
 
-      return this.checkForm();
+      return that.checkForm();
     },
 
     /** Submit form. */
     submit: function() {
-      if (!this.xhr) {
-        var $form = this.$form;
+      var that = this;
+      if (!that.xhr) {
+        var $form = that.$form;
+        var opts = that.opts;
 
         var method = attr($form, 'method');
         var url = attr($form, 'action');
@@ -674,31 +687,29 @@
         var $submit = $form.find(SUBMIT_BTNS);
 
         $submit
-          .addClass('disabled')
-          .attr('disabled', 'disabled');
-
-        var that = this;
+          .addClass(DISABLED)
+          .attr(DISABLED, DISABLED);
 
         that.xhr = $.ajax({
           url: url,
           type: method,
-          dataType: that.opts.dataType,
+          dataType: opts.dataType,
           contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
           data: datas
         });
 
         that.xhr.done(function() {
-          that.opts.onSubmitSuccess.apply(null, arguments);
+          opts.onSubmitSuccess.apply(null, arguments);
         });
 
         that.xhr.fail(function() {
-          that.opts.onSubmitError.apply(null, arguments);
+          opts.onSubmitError.apply(null, arguments);
         });
 
         that.xhr.always(function() {
-          that.opts.onSubmitComplete.apply(null, arguments);
+          opts.onSubmitComplete.apply(null, arguments);
           that.xhr = null;
-          $submit.removeClass('disabled').removeAttr('disabled');
+          $submit.removeClass(DISABLED).removeAttr(DISABLED);
         });
       }
     },
@@ -789,44 +800,42 @@
      */
     checkForm: function() {
       var formError = false;
-      this.$form.removeClass(CSS_ERROR);
+      var that = this;
+      var errors = that.errors;
+      var $form = that.$form;
+      var opts = that.opts;
+      var trueValue = true;
 
-      for (var i in this.errors) {
-        if (this.errors.hasOwnProperty(i) && !!this.errors[i]) {
-          addClasses(this.$form, CSS_ERROR);
-          formError = true;
+      $form.removeClass(CSS_ERROR);
+
+      for (var i in errors) {
+        if (errors.hasOwnProperty(i) && !!errors[i]) {
+          addClasses($form, CSS_ERROR);
+          formError = trueValue;
           break;
         }
       }
 
-      delete this.errors.$$custom;
+      delete errors.$$custom;
 
-      var customIsValid = this.opts.isValid.call(this, this.$form, this.errors);
+      var customIsValid = opts.isValid.call(that, $form, errors);
       if (!customIsValid) {
-        this.errors.$$custom = true;
-        addClasses(this.$form, CSS_ERROR);
-        formError = true;
+        errors.$$custom = trueValue;
+        addClasses($form, CSS_ERROR);
+        formError = trueValue;
       }
 
       // Disable / Enable submit button
-      if (this.opts.disableSubmit) {
+      if (opts.disableSubmit) {
+        var btns = $form.find(SUBMIT_BTNS);
         if (formError) {
-          this.$form.find(SUBMIT_BTNS).attr('disabled', 'disabled');
+          btns.attr(DISABLED, DISABLED);
         } else {
-          this.$form.find(SUBMIT_BTNS).removeAttr('disabled');
+          btns.removeAttr(DISABLED);
         }
       }
 
       return !formError;
-    },
-
-    /**
-     * Check item and update form validity.
-     * @param {jQuery} $item Item to check.
-     */
-    checkAndUpdateForm: function($item) {
-      this.check($item);
-      this.checkForm();
     },
 
     /**
@@ -889,7 +898,7 @@
      * @returns {Array} Array of detected errors.
      */
     checkInput: function($input) {
-      var type = attr($input, 'data-type') || attr($input, 'type') || 'text';
+      var type = attr($input, 'data' + TYPE) || attr($input, TYPE) || 'text';
       var fn = 'checkInput' + capitalize(type);
       return this[fn] ?
         this[fn]($input) :
@@ -1019,10 +1028,10 @@
      * @returns {Array} Array of detected errors.
      */
     checkInputNumber: function($input) {
-      var value = parseFloat($input.val());
+      var value = toFloat($input.val());
 
-      var min = parseFloat(attr($input, 'min'));
-      var max = parseFloat(attr($input, 'max'));
+      var min = toFloat(attr($input, 'min'));
+      var max = toFloat(attr($input, 'max'));
 
       if (min === undefined) {
         min = Number.MIN_VALUE;
@@ -1244,13 +1253,14 @@
 
     /** Clear form. */
     clear: function() {
-      this.$form.find('input').each(function() {
+      var $form = this.$form;
+      $form.find('input').each(function() {
         var $this = $(this);
-        if (attr($(this), 'type') !== 'hidden') {
+        if (attr($this, TYPE) !== 'hidden') {
           $this.val('');
         }
       });
-      this.$form.find('select, textarea').val('');
+      $form.find('select, textarea').val('');
     },
 
     /** Destroy plugin internal datas. */
