@@ -2694,7 +2694,7 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$errors['inputTime'].css).toHaveBeenCalledWith('left', 20);
     });
 
-    xit('should add time-invalid error if time is not valid', function() {
+    it('should add time-invalid error if time is not valid', function() {
       spyOn($.fn, 'val').andReturn('00:60:61');
 
       var errors = this.$plugin.check(this.$time);
@@ -2703,7 +2703,7 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$time.hasClass('error')).toBe(true);
       expect(this.$time.hasClass('error-required')).toBe(false);
       expect(this.$time.hasClass('error-time-pattern')).toBe(false);
-      expect(this.$time.hasClass('error-time-invalid')).toBe(false);
+      expect(this.$time.hasClass('error-time-invalid')).toBe(true);
       expect(this.$time.hasClass('error-min')).toBe(false);
       expect(this.$time.hasClass('error-max')).toBe(false);
 
