@@ -413,7 +413,7 @@ describe('jqForm Plugin: Test Suite', function() {
         type: 'POST',
         dataType: 'json',
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-        datas: this.datas
+        data: this.datas
       });
 
       expect(this.$plugin.xhr).toBe(this.xhr);

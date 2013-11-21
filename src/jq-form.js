@@ -680,7 +680,7 @@
           type: method,
           dataType: that.opts.dataType,
           contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-          datas: datas
+          data: datas
         });
 
         that.xhr.done(function() {
