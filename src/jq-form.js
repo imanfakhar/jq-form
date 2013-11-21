@@ -891,11 +891,9 @@
       var message = this.opts.messages[key];
 
       if (replacements) {
-        for (var i in replacements) {
-          if (replacements.hasOwnProperty(i)) {
-            message = message.replace('{{' + i + '}}', replacements[i]);
-          }
-        }
+        $.each(replacements, function(name, value) {
+          message = message.replace('{{' + name + '}}', value);
+        });
       }
 
       return {
