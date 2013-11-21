@@ -761,7 +761,17 @@
       // Add other found errors
       errors = errors.concat(itemErrors);
 
+      // Check custom validation
       var name = that.name($item);
+
+      var custom = that.opts.validations[name] || noop;
+      var msg = custom.call(null, $item, errors);
+      if (msg) {
+        errors.push({
+          key: 'custom',
+          label: msg
+        });
+      }
 
       // Add error class and display message
       if (errors.length > 0) {
@@ -1328,6 +1338,7 @@
     onSubmitComplete: noop,
     showErrors: true,
     errorClass: 'error',
+    validations: {},
     messages: {
       required: 'Please fill out this field',
       pattern: 'Please match the requested format',

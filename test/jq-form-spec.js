@@ -58,6 +58,7 @@ describe('jqForm Plugin: Test Suite', function() {
       onSubmitComplete: jasmine.any(Function),
       showErrors: true,
       errorClass: 'error',
+      validations: {},
       messages: {
         required: 'Please fill out this field',
         pattern: 'Please match the requested format',
@@ -101,6 +102,7 @@ describe('jqForm Plugin: Test Suite', function() {
         onSubmitError: jasmine.any(Function),
         onSubmitComplete: jasmine.any(Function),
         errorClass: 'error',
+        validations: {},
         messages: {
           required: 'Please fill out this field',
           pattern: 'Please match the requested format',
@@ -685,6 +687,46 @@ describe('jqForm Plugin: Test Suite', function() {
       });
       expect(this.$errors['inputText'].css).toHaveBeenCalledWith('left', 20);
     });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputText = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$input);
+
+      expect(this.$input.attr('data-name')).toBe('inputText');
+      expect(this.$input.hasClass('error')).toBe(true);
+      expect(this.$input.hasClass('error-required')).toBe(false);
+      expect(this.$input.hasClass('error-min-length')).toBe(false);
+      expect(this.$input.hasClass('error-max-length')).toBe(false);
+      expect(this.$input.hasClass('error-pattern')).toBe(false);
+      expect(this.$input.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputText']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputText : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputText'].css('display')).toBe('block');
+      expect(this.$errors['inputText'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputText'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputText'].html()).toBe('custom error');
+      expect(this.$errors['inputText'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputText'].css).toHaveBeenCalledWith('left', 20);
+    });
   });
 
   describe('jqForm: check checkbox input', function() {
@@ -726,6 +768,46 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$errors['inputCheckbox'].hasClass('jq-form-error')).toBe(true);
       expect(this.$errors['inputCheckbox'].hasClass('error')).toBe(true);
       expect(this.$errors['inputCheckbox'].html()).toBe('Please fill out this field');
+      expect(this.$errors['inputCheckbox'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputCheckbox'].css).toHaveBeenCalledWith('left', 20);
+    });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputCheckbox = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$input);
+
+      expect(this.$input.attr('data-name')).toBe('inputCheckbox');
+      expect(this.$input.hasClass('error')).toBe(true);
+      expect(this.$input.hasClass('error-required')).toBe(false);
+      expect(this.$input.hasClass('error-min-length')).toBe(false);
+      expect(this.$input.hasClass('error-max-length')).toBe(false);
+      expect(this.$input.hasClass('error-pattern')).toBe(false);
+      expect(this.$input.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputCheckbox']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputCheckbox : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputCheckbox'].css('display')).toBe('block');
+      expect(this.$errors['inputCheckbox'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputCheckbox'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputCheckbox'].html()).toBe('custom error');
       expect(this.$errors['inputCheckbox'].css).toHaveBeenCalledWith({
         display: '',
         top : 20
@@ -774,6 +856,46 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$errors['inputRadio'].hasClass('jq-form-error')).toBe(true);
       expect(this.$errors['inputRadio'].hasClass('error')).toBe(true);
       expect(this.$errors['inputRadio'].html()).toBe('Please fill out this field');
+      expect(this.$errors['inputRadio'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputRadio'].css).toHaveBeenCalledWith('left', 20);
+    });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputRadio = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$radio1);
+
+      expect(this.$radio1.attr('data-name')).toBe('inputRadio');
+      expect(this.$radio1.hasClass('error')).toBe(true);
+      expect(this.$radio1.hasClass('error-required')).toBe(false);
+      expect(this.$radio1.hasClass('error-min-length')).toBe(false);
+      expect(this.$radio1.hasClass('error-max-length')).toBe(false);
+      expect(this.$radio1.hasClass('error-pattern')).toBe(false);
+      expect(this.$radio1.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputRadio']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputRadio : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputRadio'].css('display')).toBe('block');
+      expect(this.$errors['inputRadio'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputRadio'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputRadio'].html()).toBe('custom error');
       expect(this.$errors['inputRadio'].css).toHaveBeenCalledWith({
         display: '',
         top : 20
@@ -902,6 +1024,46 @@ describe('jqForm Plugin: Test Suite', function() {
       });
       expect(this.$errors['textarea'].css).toHaveBeenCalledWith('left', 20);
     });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.textarea = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$textarea);
+
+      expect(this.$textarea.attr('data-name')).toBe('textarea');
+      expect(this.$textarea.hasClass('error')).toBe(true);
+      expect(this.$textarea.hasClass('error-required')).toBe(false);
+      expect(this.$textarea.hasClass('error-min-length')).toBe(false);
+      expect(this.$textarea.hasClass('error-max-length')).toBe(false);
+      expect(this.$textarea.hasClass('error-pattern')).toBe(false);
+      expect(this.$textarea.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['textarea']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        textarea : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['textarea'].css('display')).toBe('block');
+      expect(this.$errors['textarea'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['textarea'].hasClass('error')).toBe(true);
+      expect(this.$errors['textarea'].html()).toBe('custom error');
+      expect(this.$errors['textarea'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['textarea'].css).toHaveBeenCalledWith('left', 20);
+    });
   });
 
   describe('jqForm: check select', function() {
@@ -921,7 +1083,7 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$errors = this.$plugin.$errors;
     });
 
-    it('should add required error if textarea is empty', function() {
+    it('should add required error if select is empty', function() {
       this.$select.attr('required', 'required');
       this.$select.val('');
 
@@ -949,6 +1111,46 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$errors['select'].hasClass('jq-form-error')).toBe(true);
       expect(this.$errors['select'].hasClass('error')).toBe(true);
       expect(this.$errors['select'].html()).toBe('Please fill out this field');
+      expect(this.$errors['select'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['select'].css).toHaveBeenCalledWith('left', 20);
+    });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.select = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$select);
+
+      expect(this.$select.attr('data-name')).toBe('select');
+      expect(this.$select.hasClass('error')).toBe(true);
+      expect(this.$select.hasClass('error-required')).toBe(false);
+      expect(this.$select.hasClass('error-min-length')).toBe(false);
+      expect(this.$select.hasClass('error-max-length')).toBe(false);
+      expect(this.$select.hasClass('error-pattern')).toBe(false);
+      expect(this.$select.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['select']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        select : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['select'].css('display')).toBe('block');
+      expect(this.$errors['select'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['select'].hasClass('error')).toBe(true);
+      expect(this.$errors['select'].html()).toBe('custom error');
       expect(this.$errors['select'].css).toHaveBeenCalledWith({
         display: '',
         top : 20
@@ -1116,6 +1318,46 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$errors['inputPassword'].hasClass('jq-form-error')).toBe(true);
       expect(this.$errors['inputPassword'].hasClass('error')).toBe(true);
       expect(this.$errors['inputPassword'].html()).toBe('Value must match foo input');
+      expect(this.$errors['inputPassword'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputPassword'].css).toHaveBeenCalledWith('left', 20);
+    });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputPassword = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$password);
+
+      expect(this.$password.attr('data-name')).toBe('inputPassword');
+      expect(this.$password.hasClass('error')).toBe(true);
+      expect(this.$password.hasClass('error-required')).toBe(false);
+      expect(this.$password.hasClass('error-min-length')).toBe(false);
+      expect(this.$password.hasClass('error-max-length')).toBe(false);
+      expect(this.$password.hasClass('error-pattern')).toBe(false);
+      expect(this.$password.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputPassword']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputPassword : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputPassword'].css('display')).toBe('block');
+      expect(this.$errors['inputPassword'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputPassword'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputPassword'].html()).toBe('custom error');
       expect(this.$errors['inputPassword'].css).toHaveBeenCalledWith({
         display: '',
         top : 20
@@ -1376,6 +1618,46 @@ describe('jqForm Plugin: Test Suite', function() {
       });
       expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith('left', 20);
     });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputEmail = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$email);
+
+      expect(this.$email.attr('data-name')).toBe('inputEmail');
+      expect(this.$email.hasClass('error')).toBe(true);
+      expect(this.$email.hasClass('error-required')).toBe(false);
+      expect(this.$email.hasClass('error-min-length')).toBe(false);
+      expect(this.$email.hasClass('error-max-length')).toBe(false);
+      expect(this.$email.hasClass('error-pattern')).toBe(false);
+      expect(this.$email.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputEmail']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputEmail : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputEmail'].css('display')).toBe('block');
+      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputEmail'].html()).toBe('custom error');
+      expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith('left', 20);
+    });
   });
 
   describe('jqForm: check url input', function() {
@@ -1630,6 +1912,46 @@ describe('jqForm Plugin: Test Suite', function() {
       });
       expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith('left', 20);
     });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputUrl = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$url);
+
+      expect(this.$url.attr('data-name')).toBe('inputUrl');
+      expect(this.$url.hasClass('error')).toBe(true);
+      expect(this.$url.hasClass('error-required')).toBe(false);
+      expect(this.$url.hasClass('error-min-length')).toBe(false);
+      expect(this.$url.hasClass('error-max-length')).toBe(false);
+      expect(this.$url.hasClass('error-pattern')).toBe(false);
+      expect(this.$url.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputUrl']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputUrl : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputUrl'].css('display')).toBe('block');
+      expect(this.$errors['inputUrl'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputUrl'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputUrl'].html()).toBe('custom error');
+      expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith('left', 20);
+    });
   });
 
   describe('jqForm: check number input', function() {
@@ -1746,6 +2068,46 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$errors['inputNumber'].hasClass('jq-form-error')).toBe(true);
       expect(this.$errors['inputNumber'].hasClass('error')).toBe(true);
       expect(this.$errors['inputNumber'].html()).toBe('Value must be less than or equal to 0');
+      expect(this.$errors['inputNumber'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputNumber'].css).toHaveBeenCalledWith('left', 20);
+    });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputNumber = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$number);
+
+      expect(this.$number.attr('data-name')).toBe('inputNumber');
+      expect(this.$number.hasClass('error')).toBe(true);
+      expect(this.$number.hasClass('error-required')).toBe(false);
+      expect(this.$number.hasClass('error-min-length')).toBe(false);
+      expect(this.$number.hasClass('error-max-length')).toBe(false);
+      expect(this.$number.hasClass('error-pattern')).toBe(false);
+      expect(this.$number.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputNumber']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputNumber : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputNumber'].css('display')).toBe('block');
+      expect(this.$errors['inputNumber'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputNumber'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputNumber'].html()).toBe('custom error');
       expect(this.$errors['inputNumber'].css).toHaveBeenCalledWith({
         display: '',
         top : 20
@@ -1957,6 +2319,46 @@ describe('jqForm Plugin: Test Suite', function() {
       });
       expect(this.$errors['inputDate'].css).toHaveBeenCalledWith('left', 20);
     });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputDate = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$date);
+
+      expect(this.$date.attr('data-name')).toBe('inputDate');
+      expect(this.$date.hasClass('error')).toBe(true);
+      expect(this.$date.hasClass('error-required')).toBe(false);
+      expect(this.$date.hasClass('error-min-length')).toBe(false);
+      expect(this.$date.hasClass('error-max-length')).toBe(false);
+      expect(this.$date.hasClass('error-pattern')).toBe(false);
+      expect(this.$date.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputDate']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputDate : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputDate'].css('display')).toBe('block');
+      expect(this.$errors['inputDate'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputDate'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputDate'].html()).toBe('custom error');
+      expect(this.$errors['inputDate'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputDate'].css).toHaveBeenCalledWith('left', 20);
+    });
   });
 
   describe('jqForm: check month input', function() {
@@ -2162,6 +2564,46 @@ describe('jqForm Plugin: Test Suite', function() {
       });
       expect(this.$errors['inputMonth'].css).toHaveBeenCalledWith('left', 20);
     });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputMonth = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$month);
+
+      expect(this.$month.attr('data-name')).toBe('inputMonth');
+      expect(this.$month.hasClass('error')).toBe(true);
+      expect(this.$month.hasClass('error-required')).toBe(false);
+      expect(this.$month.hasClass('error-min-length')).toBe(false);
+      expect(this.$month.hasClass('error-max-length')).toBe(false);
+      expect(this.$month.hasClass('error-pattern')).toBe(false);
+      expect(this.$month.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputMonth']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputMonth : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputMonth'].css('display')).toBe('block');
+      expect(this.$errors['inputMonth'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputMonth'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputMonth'].html()).toBe('custom error');
+      expect(this.$errors['inputMonth'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputMonth'].css).toHaveBeenCalledWith('left', 20);
+    });
   });
 
   describe('jqForm: check time input', function() {
@@ -2361,6 +2803,46 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$errors['inputTime'].hasClass('jq-form-error')).toBe(true);
       expect(this.$errors['inputTime'].hasClass('error')).toBe(true);
       expect(this.$errors['inputTime'].html()).toBe('Value must be less than or equal to 01:00:00');
+      expect(this.$errors['inputTime'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputTime'].css).toHaveBeenCalledWith('left', 20);
+    });
+
+    it('should add custom validation error', function() {
+      this.$plugin.opts.validations.inputTime = function() {
+        return 'custom error';
+      };
+
+      var errors = this.$plugin.check(this.$time);
+
+      expect(this.$time.attr('data-name')).toBe('inputTime');
+      expect(this.$time.hasClass('error')).toBe(true);
+      expect(this.$time.hasClass('error-required')).toBe(false);
+      expect(this.$time.hasClass('error-min-length')).toBe(false);
+      expect(this.$time.hasClass('error-max-length')).toBe(false);
+      expect(this.$time.hasClass('error-pattern')).toBe(false);
+      expect(this.$time.hasClass('error-same-as')).toBe(false);
+
+      // Check error cache
+      expect(this.$plugin.errors['inputTime']).toBe(true);
+      expect(this.$plugin.errors).toEqual({
+        inputTime : true
+      });
+
+      // Check detected errors
+      expect(errors).toEqual([{
+        key: 'custom',
+        label: 'custom error'
+      }]);
+
+      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputTime'].css('display')).toBe('block');
+      expect(this.$errors['inputTime'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputTime'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputTime'].html()).toBe('custom error');
       expect(this.$errors['inputTime'].css).toHaveBeenCalledWith({
         display: '',
         top : 20
