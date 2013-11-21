@@ -57,6 +57,7 @@ describe('jqForm Plugin: Test Suite', function() {
       onSubmitError: jasmine.any(Function),
       onSubmitComplete: jasmine.any(Function),
       showErrors: true,
+      errorClass: 'error',
       messages: {
         required: 'Please fill out this field',
         pattern: 'Please match the requested format',
@@ -99,6 +100,7 @@ describe('jqForm Plugin: Test Suite', function() {
         onSubmitSuccess: jasmine.any(Function),
         onSubmitError: jasmine.any(Function),
         onSubmitComplete: jasmine.any(Function),
+        errorClass: 'error',
         messages: {
           required: 'Please fill out this field',
           pattern: 'Please match the requested format',
@@ -514,6 +516,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputText'].css('display')).toBe('block');
+      expect(this.$errors['inputText'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputText'].hasClass('error')).toBe(true);
       expect(this.$errors['inputText'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputText'].css).toHaveBeenCalledWith({
         display: '',
@@ -551,6 +555,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputText'].css('display')).toBe('block');
+      expect(this.$errors['inputText'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputText'].hasClass('error')).toBe(true);
       expect(this.$errors['inputText'].html()).toBe('Text must be at least 5 characters');
       expect(this.$errors['inputText'].css).toHaveBeenCalledWith({
         display: '',
@@ -588,6 +594,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputText'].css('display')).toBe('block');
+      expect(this.$errors['inputText'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputText'].hasClass('error')).toBe(true);
       expect(this.$errors['inputText'].html()).toBe('Text must be at most 5 characters');
       expect(this.$errors['inputText'].css).toHaveBeenCalledWith({
         display: '',
@@ -625,6 +633,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputText'].css('display')).toBe('block');
+      expect(this.$errors['inputText'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputText'].hasClass('error')).toBe(true);
       expect(this.$errors['inputText'].html()).toBe('Please match the requested format');
       expect(this.$errors['inputText'].css).toHaveBeenCalledWith({
         display: '',
@@ -666,6 +676,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputText'].css('display')).toBe('block');
+      expect(this.$errors['inputText'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputText'].hasClass('error')).toBe(true);
       expect(this.$errors['inputText'].html()).toBe('Value must match foo input');
       expect(this.$errors['inputText'].css).toHaveBeenCalledWith({
         display: '',
@@ -711,6 +723,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputCheckbox'].css('display')).toBe('block');
+      expect(this.$errors['inputCheckbox'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputCheckbox'].hasClass('error')).toBe(true);
       expect(this.$errors['inputCheckbox'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputCheckbox'].css).toHaveBeenCalledWith({
         display: '',
@@ -757,6 +771,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputRadio'].css('display')).toBe('block');
+      expect(this.$errors['inputRadio'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputRadio'].hasClass('error')).toBe(true);
       expect(this.$errors['inputRadio'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputRadio'].css).toHaveBeenCalledWith({
         display: '',
@@ -803,6 +819,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['textarea'].css('display')).toBe('block');
+      expect(this.$errors['textarea'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['textarea'].hasClass('error')).toBe(true);
       expect(this.$errors['textarea'].html()).toBe('Please fill out this field');
       expect(this.$errors['textarea'].css).toHaveBeenCalledWith({
         display: '',
@@ -838,6 +856,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['textarea'].css('display')).toBe('block');
+      expect(this.$errors['textarea'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['textarea'].hasClass('error')).toBe(true);
       expect(this.$errors['textarea'].html()).toBe('Text must be at least 5 characters');
       expect(this.$errors['textarea'].css).toHaveBeenCalledWith({
         display: '',
@@ -873,6 +893,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['textarea'].css('display')).toBe('block');
+      expect(this.$errors['textarea'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['textarea'].hasClass('error')).toBe(true);
       expect(this.$errors['textarea'].html()).toBe('Text must be at most 3 characters');
       expect(this.$errors['textarea'].css).toHaveBeenCalledWith({
         display: '',
@@ -924,6 +946,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['select'].css('display')).toBe('block');
+      expect(this.$errors['select'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['select'].hasClass('error')).toBe(true);
       expect(this.$errors['select'].html()).toBe('Please fill out this field');
       expect(this.$errors['select'].css).toHaveBeenCalledWith({
         display: '',
@@ -971,6 +995,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputPassword'].css('display')).toBe('block');
+      expect(this.$errors['inputPassword'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputPassword'].hasClass('error')).toBe(true);
       expect(this.$errors['inputPassword'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputPassword'].css).toHaveBeenCalledWith({
         display: '',
@@ -1007,6 +1033,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputPassword'].css('display')).toBe('block');
+      expect(this.$errors['inputPassword'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputPassword'].hasClass('error')).toBe(true);
       expect(this.$errors['inputPassword'].html()).toBe('Text must be at least 5 characters');
       expect(this.$errors['inputPassword'].css).toHaveBeenCalledWith({
         display: '',
@@ -1043,6 +1071,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputPassword'].css('display')).toBe('block');
+      expect(this.$errors['inputPassword'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputPassword'].hasClass('error')).toBe(true);
       expect(this.$errors['inputPassword'].html()).toBe('Text must be at most 3 characters');
       expect(this.$errors['inputPassword'].css).toHaveBeenCalledWith({
         display: '',
@@ -1083,6 +1113,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputPassword'].css('display')).toBe('block');
+      expect(this.$errors['inputPassword'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputPassword'].hasClass('error')).toBe(true);
       expect(this.$errors['inputPassword'].html()).toBe('Value must match foo input');
       expect(this.$errors['inputPassword'].css).toHaveBeenCalledWith({
         display: '',
@@ -1132,6 +1164,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputEmail'].css('display')).toBe('block');
+      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
       expect(this.$errors['inputEmail'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
         display: '',
@@ -1170,6 +1204,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputEmail'].css('display')).toBe('block');
+      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
       expect(this.$errors['inputEmail'].html()).toBe('Text must be at least 15 characters');
       expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
         display: '',
@@ -1208,6 +1244,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputEmail'].css('display')).toBe('block');
+      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
       expect(this.$errors['inputEmail'].html()).toBe('Text must be at most 10 characters');
       expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
         display: '',
@@ -1250,6 +1288,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputEmail'].css('display')).toBe('block');
+      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
       expect(this.$errors['inputEmail'].html()).toBe('Value must match foo input');
       expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
         display: '',
@@ -1287,6 +1327,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputEmail'].css('display')).toBe('block');
+      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
       expect(this.$errors['inputEmail'].html()).toBe('Multiple email address is not allowed');
       expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
         display: '',
@@ -1325,6 +1367,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputEmail'].css('display')).toBe('block');
+      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
       expect(this.$errors['inputEmail'].html()).toBe('Please enter an email address');
       expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
         display: '',
@@ -1374,6 +1418,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputUrl'].css('display')).toBe('block');
+      expect(this.$errors['inputUrl'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputUrl'].hasClass('error')).toBe(true);
       expect(this.$errors['inputUrl'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith({
         display: '',
@@ -1412,6 +1458,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputUrl'].css('display')).toBe('block');
+      expect(this.$errors['inputUrl'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputUrl'].hasClass('error')).toBe(true);
       expect(this.$errors['inputUrl'].html()).toBe('Text must be at least 50 characters');
       expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith({
         display: '',
@@ -1450,6 +1498,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputUrl'].css('display')).toBe('block');
+      expect(this.$errors['inputUrl'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputUrl'].hasClass('error')).toBe(true);
       expect(this.$errors['inputUrl'].html()).toBe('Text must be at most 15 characters');
       expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith({
         display: '',
@@ -1492,6 +1542,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputUrl'].css('display')).toBe('block');
+      expect(this.$errors['inputUrl'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputUrl'].hasClass('error')).toBe(true);
       expect(this.$errors['inputUrl'].html()).toBe('Value must match foo input');
       expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith({
         display: '',
@@ -1530,6 +1582,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputUrl'].css('display')).toBe('block');
+      expect(this.$errors['inputUrl'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputUrl'].hasClass('error')).toBe(true);
       expect(this.$errors['inputUrl'].html()).toBe('Please match the requested format');
       expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith({
         display: '',
@@ -1567,6 +1621,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputUrl'].css('display')).toBe('block');
+      expect(this.$errors['inputUrl'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputUrl'].hasClass('error')).toBe(true);
       expect(this.$errors['inputUrl'].html()).toBe('Please enter an URL');
       expect(this.$errors['inputUrl'].css).toHaveBeenCalledWith({
         display: '',
@@ -1613,6 +1669,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputNumber'].css('display')).toBe('block');
+      expect(this.$errors['inputNumber'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputNumber'].hasClass('error')).toBe(true);
       expect(this.$errors['inputNumber'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputNumber'].css).toHaveBeenCalledWith({
         display: '',
@@ -1648,6 +1706,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputNumber'].css('display')).toBe('block');
+      expect(this.$errors['inputNumber'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputNumber'].hasClass('error')).toBe(true);
       expect(this.$errors['inputNumber'].html()).toBe('Value must be greater than or equal to 0');
       expect(this.$errors['inputNumber'].css).toHaveBeenCalledWith({
         display: '',
@@ -1683,6 +1743,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputNumber'].css('display')).toBe('block');
+      expect(this.$errors['inputNumber'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputNumber'].hasClass('error')).toBe(true);
       expect(this.$errors['inputNumber'].html()).toBe('Value must be less than or equal to 0');
       expect(this.$errors['inputNumber'].css).toHaveBeenCalledWith({
         display: '',
@@ -1732,6 +1794,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputDate'].css('display')).toBe('block');
+      expect(this.$errors['inputDate'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputDate'].hasClass('error')).toBe(true);
       expect(this.$errors['inputDate'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputDate'].css).toHaveBeenCalledWith({
         display: '',
@@ -1768,6 +1832,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputDate'].css('display')).toBe('block');
+      expect(this.$errors['inputDate'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputDate'].hasClass('error')).toBe(true);
       expect(this.$errors['inputDate'].html()).toBe('Please enter a date');
       expect(this.$errors['inputDate'].css).toHaveBeenCalledWith({
         display: '',
@@ -1804,6 +1870,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputDate'].css('display')).toBe('block');
+      expect(this.$errors['inputDate'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputDate'].hasClass('error')).toBe(true);
       expect(this.$errors['inputDate'].html()).toBe('Please enter a date');
       expect(this.$errors['inputDate'].css).toHaveBeenCalledWith({
         display: '',
@@ -1841,6 +1909,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputDate'].css('display')).toBe('block');
+      expect(this.$errors['inputDate'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputDate'].hasClass('error')).toBe(true);
       expect(this.$errors['inputDate'].html()).toBe('Value must be greater than or equal to 2013-01-05');
       expect(this.$errors['inputDate'].css).toHaveBeenCalledWith({
         display: '',
@@ -1878,6 +1948,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputDate'].css('display')).toBe('block');
+      expect(this.$errors['inputDate'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputDate'].hasClass('error')).toBe(true);
       expect(this.$errors['inputDate'].html()).toBe('Value must be less than or equal to 2013-01-01');
       expect(this.$errors['inputDate'].css).toHaveBeenCalledWith({
         display: '',
@@ -1927,6 +1999,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputMonth'].css('display')).toBe('block');
+      expect(this.$errors['inputMonth'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputMonth'].hasClass('error')).toBe(true);
       expect(this.$errors['inputMonth'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputMonth'].css).toHaveBeenCalledWith({
         display: '',
@@ -1963,6 +2037,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputMonth'].css('display')).toBe('block');
+      expect(this.$errors['inputMonth'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputMonth'].hasClass('error')).toBe(true);
       expect(this.$errors['inputMonth'].html()).toBe('Please enter a date');
       expect(this.$errors['inputMonth'].css).toHaveBeenCalledWith({
         display: '',
@@ -1999,6 +2075,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputMonth'].css('display')).toBe('block');
+      expect(this.$errors['inputMonth'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputMonth'].hasClass('error')).toBe(true);
       expect(this.$errors['inputMonth'].html()).toBe('Please enter a date');
       expect(this.$errors['inputMonth'].css).toHaveBeenCalledWith({
         display: '',
@@ -2036,6 +2114,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputMonth'].css('display')).toBe('block');
+      expect(this.$errors['inputMonth'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputMonth'].hasClass('error')).toBe(true);
       expect(this.$errors['inputMonth'].html()).toBe('Value must be greater than or equal to 2013-02-01');
       expect(this.$errors['inputMonth'].css).toHaveBeenCalledWith({
         display: '',
@@ -2073,6 +2153,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputMonth'].css('display')).toBe('block');
+      expect(this.$errors['inputMonth'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputMonth'].hasClass('error')).toBe(true);
       expect(this.$errors['inputMonth'].html()).toBe('Value must be less than or equal to 2013-01-01');
       expect(this.$errors['inputMonth'].css).toHaveBeenCalledWith({
         display: '',
@@ -2122,6 +2204,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputTime'].css('display')).toBe('block');
+      expect(this.$errors['inputTime'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputTime'].hasClass('error')).toBe(true);
       expect(this.$errors['inputTime'].html()).toBe('Please fill out this field');
       expect(this.$errors['inputTime'].css).toHaveBeenCalledWith({
         display: '',
@@ -2158,6 +2242,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputTime'].css('display')).toBe('block');
+      expect(this.$errors['inputTime'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputTime'].hasClass('error')).toBe(true);
       expect(this.$errors['inputTime'].html()).toBe('Please enter a time');
       expect(this.$errors['inputTime'].css).toHaveBeenCalledWith({
         display: '',
@@ -2194,6 +2280,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputTime'].css('display')).toBe('block');
+      expect(this.$errors['inputTime'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputTime'].hasClass('error')).toBe(true);
       expect(this.$errors['inputTime'].html()).toBe('Please enter a time');
       expect(this.$errors['inputTime'].css).toHaveBeenCalledWith({
         display: '',
@@ -2231,6 +2319,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputTime'].css('display')).toBe('block');
+      expect(this.$errors['inputTime'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputTime'].hasClass('error')).toBe(true);
       expect(this.$errors['inputTime'].html()).toBe('Value must be greater than or equal to 02:00:00');
       expect(this.$errors['inputTime'].css).toHaveBeenCalledWith({
         display: '',
@@ -2268,6 +2358,8 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputTime'].css('display')).toBe('block');
+      expect(this.$errors['inputTime'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputTime'].hasClass('error')).toBe(true);
       expect(this.$errors['inputTime'].html()).toBe('Value must be less than or equal to 01:00:00');
       expect(this.$errors['inputTime'].css).toHaveBeenCalledWith({
         display: '',

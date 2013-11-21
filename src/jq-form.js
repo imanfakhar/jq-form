@@ -640,15 +640,17 @@
     appendErrorAreas: function() {
       var that = this;
 
-      that.$errors = {};
+      var $errors = that.$errors = {};
 
       that.$items().each(function() {
         var $this = $(this);
         var name = that.name($this);
 
-        var $error = $('<div></div>').addClass('jq-form-error');
-        if (!that.$errors.hasOwnProperty(name)) {
-          that.$errors[name] = $error;
+        var $error = $('<div></div>');
+        addClasses($error, 'jq-form-error', that.opts.errorClass);
+
+        if (!$errors.hasOwnProperty(name)) {
+          $errors[name] = $error;
           $this.after($error);
         }
       });
@@ -1325,6 +1327,7 @@
     onSubmitError: noop,
     onSubmitComplete: noop,
     showErrors: true,
+    errorClass: 'error',
     messages: {
       required: 'Please fill out this field',
       pattern: 'Please match the requested format',
