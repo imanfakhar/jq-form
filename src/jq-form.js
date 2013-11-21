@@ -39,6 +39,10 @@
   var noop = function() {
   };
 
+  /** Namespace used to bind user events. */
+  var NAMESPACE = '.jqForm';
+
+  /** Function that returns always true. */
   var returnTrue = function() {
     return true;
   };
@@ -585,21 +589,21 @@
     /** Bind user events. */
     bind: function() {
       var that = this;
-      this.$form.on('keyup.jqForm', function(event) {
+      this.$form.on('keyup' + NAMESPACE, function(event) {
         var $item = $(event.srcElement);
         if (!isButton($item)) {
           that.checkAndUpdateForm($item);
         }
       });
 
-      this.$form.on('focusout.jqForm', function(event) {
+      this.$form.on('focusout' + NAMESPACE, function(event) {
         var $item = $(event.srcElement);
         if (!isButton($item)) {
           that.checkAndUpdateForm($item);
         }
       });
 
-      this.$form.on('change.jqForm', function(event) {
+      this.$form.on('change' + NAMESPACE, function(event) {
         var $item = $(event.srcElement);
         that.checkAndUpdateForm($item);
 
@@ -607,7 +611,7 @@
         addClasses(that.$form, CSS_DIRTY);
       });
 
-      this.$form.on('submit.jqForm', function(event) {
+      this.$form.on('submit' + NAMESPACE, function(event) {
         event.preventDefault();
         that.$form.addClass('submitted');
         var valid = that.validate();
@@ -701,7 +705,7 @@
 
     /** Unbind user events. */
     unbind: function() {
-      this.$form.off('.jqForm');
+      this.$form.off(NAMESPACE);
     },
 
     /** Get name attribute of item */
