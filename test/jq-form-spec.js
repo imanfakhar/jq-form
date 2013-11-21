@@ -400,8 +400,12 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.attr('action', '/foo');
       this.$form.attr('method', 'POST');
 
+      this.$input = $('<input type="email" name="input-email"/>');
+      this.$form.append(this.$input);
+
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
+      this.$errors = this.$plugin.$errors;
 
       this.datas = 'foo=bar';
       this.xhr = jasmine.createSpyObj('xhr', ['done', 'fail', 'always']);
@@ -431,7 +435,11 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$plugin.xhr).not.toBe(null);
 
       spyOn(this.$plugin.opts, 'onSubmitError');
-      this.$plugin.xhr.fail.argsForCall[0][0]();
+      var jqXhr = {
+        status: 500
+      };
+
+      this.$plugin.xhr.fail.argsForCall[0][0](jqXhr);
       expect(this.$plugin.opts.onSubmitError).toHaveBeenCalled();
       expect(this.$plugin.xhr).not.toBe(null);
 
@@ -439,6 +447,47 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$plugin.xhr.always.argsForCall[0][0]();
       expect(this.$plugin.opts.onSubmitComplete).toHaveBeenCalled();
       expect(this.$plugin.xhr).toBe(null);
+    });
+
+    it('should submit form and display server validation error', function() {
+      this.$plugin.submit();
+
+      expect($.ajax).toHaveBeenCalledWith({
+        url: '/foo',
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: this.datas
+      });
+
+      expect(this.$plugin.xhr).toBe(this.xhr);
+      expect(this.$plugin.xhr.done).toHaveBeenCalled();
+      expect(this.$plugin.xhr.fail).toHaveBeenCalled();
+      expect(this.$plugin.xhr.always).toHaveBeenCalled();
+
+      spyOn(this.$plugin.opts, 'onSubmitError');
+
+      var jqXhr = {
+        status: 400
+      };
+
+      var response = '{"inputEmail": "Your email is already used"}';
+
+      this.$plugin.xhr.fail.argsForCall[0][0](jqXhr, response);
+      expect(this.$plugin.opts.onSubmitError).toHaveBeenCalled();
+      expect(this.$plugin.xhr).not.toBe(null);
+
+//      expect(this.$form.hasClass('error')).toBe(true);
+
+      expect(this.$errors['inputEmail'].css('display')).toBe('block');
+      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
+      expect(this.$errors['inputEmail'].html()).toBe('Your email is already used');
+      expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
+        display: '',
+        top : 20
+      });
+      expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith('left', 20);
     });
 
     it('should not submit form during submit', function() {

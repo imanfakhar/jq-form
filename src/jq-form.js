@@ -571,6 +571,27 @@
     return type === 'button' || type === 'image' || type === 'reset' || $item.is('button');
   };
 
+  /** Get element by its name */
+  var byName = function($form, name) {
+    return $form.find('[' + DATA_NAME + '=' + name + ']');
+  };
+
+  /** Build error object */
+  var buildError = function(key, label, replacements) {
+    var msg = label;
+
+    if (replacements) {
+      $.each(replacements, function(placeholder, value) {
+        msg = msg.replace('{{' + placeholder + '}}', value);
+      });
+    }
+
+    return {
+      key: key,
+      label: msg
+    };
+  };
+
   /**
    * Form.
    * @param {jQuery} form jQuery form.
@@ -704,7 +725,16 @@
           opts.onSubmitSuccess.apply(null, arguments);
         });
 
-        that.xhr.fail(function() {
+        that.xhr.fail(function(jqXhr, text) {
+          if (jqXhr.status === 400) {
+            // Display server validation errors
+            var obj = $.parseJSON(text);
+            $.each(obj, function(name, value) {
+              var $item = byName($form, name);
+              that.displayErrors($item, [buildError('server', value)]);
+            });
+          }
+
           opts.onSubmitError.apply(null, arguments);
         });
 
@@ -775,35 +805,41 @@
 
       // Add error class and display message
       if (errors.length > 0) {
-        addClasses($item, CSS_ERROR);
-
-        // Display error message
-        var firstError = errors[0];
-        if (that.$errors[name]) {
-          var position = $item.position();
-          var heightItem = $item.outerHeight();
-          var widthItem = $item.outerWidth();
-
-          var top = position.top + heightItem + 5;
-
-          var $error = that.$errors[name];
-          $error
-            .css({
-              'display': '',
-              'top': top
-            })
-            .html(firstError.label);
-
-          var widthLabel = $error.outerWidth();
-          var diff = widthItem - widthLabel;
-          var left = position.left + (diff / 2);
-          $error.css('left', left);
-        }
+        this.displayErrors($item, errors);
       }
 
       this.errors[name] = errors.length > 0;
       this.checkForm();
       return errors;
+    },
+
+    /** Display errors for given item */
+    displayErrors: function($item, errors) {
+      var that = this;
+
+      addClasses($item, CSS_ERROR);
+
+      // Display error message
+      var name = that.name($item);
+      var $error = that.$errors[name];
+      var firstError = errors[0];
+
+      if ($error) {
+        var position = $item.position();
+        var heightItem = $item.outerHeight();
+        var widthItem = $item.outerWidth();
+
+        var top = position.top + heightItem + 5;
+
+        $error
+          .css({ 'display': '', 'top': top })
+          .html(firstError.label);
+
+        var widthLabel = $error.outerWidth();
+        var diff = widthItem - widthLabel;
+        var left = position.left + (diff / 2);
+        $error.css('left', left);
+      }
     },
 
     /**
@@ -889,17 +925,7 @@
     /** Build error message from key and optional replacements */
     buildError: function(key, replacements) {
       var message = this.opts.messages[key];
-
-      if (replacements) {
-        $.each(replacements, function(name, value) {
-          message = message.replace('{{' + name + '}}', value);
-        });
-      }
-
-      return {
-        key: key,
-        label: message
-      };
+      return buildError(key, message, replacements);
     },
 
     /**
