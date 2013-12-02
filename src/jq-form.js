@@ -1287,6 +1287,35 @@
       return o;
     },
 
+    /**
+     * Populate form from json object.
+     * @param {object} json Json object.
+     * @param {string=} current Current context in json.
+     */
+    fromJSON: function(json, current) {
+      var currentKey = current || '';
+      for (var name in json) {
+        if (json.hasOwnProperty(name)) {
+          var fullName = currentKey ? currentKey + '.' + name : name;
+
+          var value = json[name];
+          if (typeof value === 'object') {
+            this.fromJSON(value, fullName);
+          } else {
+            var $el = this.$form.find('[name="' + fullName + '"]');
+            var type = $el.attr('type');
+            if (type === 'checkbox') {
+              $el.attr('checked', !!value);
+            } else if (type === 'radio') {
+              $el.filter('[value="' + value + '"]').attr('selected', true);
+            } else {
+              $el.val(value);
+            }
+          }
+        }
+      }
+    },
+
     /** Clear form. */
     clear: function() {
       var $form = this.$form;
@@ -1335,6 +1364,11 @@
 
     self.toJSON = function() {
       return $(self).data(PLUGIN_NAME).toJSON();
+    };
+
+    self.fromJSON = function() {
+      $(self).data(PLUGIN_NAME).fromJSON();
+      return self;
     };
 
     return self.each(function() {

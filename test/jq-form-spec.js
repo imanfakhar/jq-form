@@ -121,7 +121,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
   });
 
-  describe('jqForm: toJSON', function() {
+  describe('jqForm: toJSON/fromJSON', function() {
     it("should serialize form to json object with simple string values", function() {
       this.$input = $('<input type="text" name="foo1" value="bar1"/>');
       this.$select = $('<select name="foo2"><option value="bar2" selected></option></select>');
@@ -224,6 +224,83 @@ describe('jqForm Plugin: Test Suite', function() {
           ]
         }
       });
+    });
+
+    it("should serialize form from json object with simple string values", function() {
+      this.$input = $('<input type="text" name="foo1"/>');
+      this.$select = $('<select name="foo2"><option value="bar2"></option></select>');
+
+      this.$form.append(this.$input);
+      this.$form.append(this.$select);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      this.$plugin.fromJSON({
+        foo1: 'bar1',
+        foo2: 'bar2'
+      });
+
+      expect(this.$input.val()).toEqual('bar1');
+      expect(this.$select.val()).toEqual('bar2');
+    });
+
+    it("should serialize form from json object with complex string values", function() {
+      this.$input = $('<input type="text" name="foo.foo1"/>');
+      this.$select = $('<select name="foo.foo2"><option value="bar2"></option></select>');
+
+      this.$form.append(this.$input);
+      this.$form.append(this.$select);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      this.$plugin.fromJSON({
+        foo: {
+          foo1: 'bar1',
+          foo2: 'bar2'
+        }
+      });
+
+      expect(this.$input.val()).toEqual('bar1');
+      expect(this.$select.val()).toEqual('bar2');
+    });
+
+    it("should serialize form from json and check checkbox", function() {
+      this.$checkbox1 = $('<input type="checkbox" name="foo"/>');
+      this.$checkbox2 = $('<input type="checkbox" name="bar"/>');
+
+      this.$form.append(this.$checkbox1);
+      this.$form.append(this.$checkbox2);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      this.$plugin.fromJSON({
+        foo: true,
+        bar: false
+      });
+
+      expect(this.$checkbox1.attr('checked')).toBeDefined();
+      expect(this.$checkbox2.attr('checked')).toBeFalsy();
+    });
+
+    it("should serialize form from json and select radio button", function() {
+      this.$radio1 = $('<input type="radio" name="foo" value="bar1"/>');
+      this.$radio2 = $('<input type="radio" name="foo" value="bar2"/>');
+
+      this.$form.append(this.$radio1);
+      this.$form.append(this.$radio2);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+
+      this.$plugin.fromJSON({
+        foo: 'bar1'
+      });
+
+      expect(this.$radio1.attr('selected')).toBeDefined();
+      expect(this.$radio2.attr('selected')).toBeFalsy();
     });
   });
 
