@@ -544,17 +544,18 @@ describe('jqForm Plugin: Test Suite', function() {
 
       spyOn(this.$plugin.opts, 'onSubmitError');
 
-      var jqXhr = {
-        status: 400
-      };
-
       var response = '{"inputEmail": "Your email is already used"}';
 
-      this.$plugin.xhr.fail.argsForCall[0][0](jqXhr, response);
+      var jqXhr = {
+        status: 400,
+        responseText: response
+      };
+
+      this.$plugin.xhr.fail.argsForCall[0][0](jqXhr, "error", "Bad request");
       expect(this.$plugin.opts.onSubmitError).toHaveBeenCalled();
       expect(this.$plugin.xhr).not.toBe(null);
 
-//      expect(this.$form.hasClass('error')).toBe(true);
+      expect(this.$form.hasClass('error')).toBe(true);
 
       expect(this.$errors['inputEmail'].css('display')).toBe('block');
       expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);

@@ -704,6 +704,8 @@
         var $form = that.$form;
         var opts = that.opts;
 
+        removeClasses($form, CSS_ERROR);
+
         var method = attr($form, 'method');
         var url = attr($form, 'action');
         var datas = $form.serialize();
@@ -725,10 +727,12 @@
           opts.onSubmitSuccess.apply(null, arguments);
         });
 
-        that.xhr.fail(function(jqXhr, text) {
+        that.xhr.fail(function(jqXhr) {
+          addClasses($form, CSS_ERROR);
+
           if (jqXhr.status === 400) {
             // Display server validation errors
-            var obj = $.parseJSON(text);
+            var obj = $.parseJSON(jqXhr.responseText);
             $.each(obj, function(name, value) {
               var $item = byName($form, name);
               that.displayErrors($item, [buildError('server', value)]);
