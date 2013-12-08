@@ -1370,8 +1370,8 @@
       return $(self).data(PLUGIN_NAME).toJSON();
     };
 
-    self.fromJSON = function() {
-      $(self).data(PLUGIN_NAME).fromJSON();
+    self.fromJSON = function(obj) {
+      $(self).data(PLUGIN_NAME).fromJSON(obj);
       return self;
     };
 
