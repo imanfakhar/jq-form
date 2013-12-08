@@ -920,9 +920,10 @@
     clearMessage: function($item) {
       if (this.$errors) {
         var name = this.name($item);
-        this.$errors[name]
-          .hide()
-          .html('');
+        var $error = this.$errors[name];
+        if ($error) {
+          $error.hide().html('');
+        }
       }
     },
 
