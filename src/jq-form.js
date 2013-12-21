@@ -629,7 +629,7 @@
 
       $form.on('keyup' + NAMESPACE + ' focusout' + NAMESPACE, function(event) {
         var $item = $(event.srcElement);
-        if (!isButton($item)) {
+        if ($item.length > 0 && !isButton($item)) {
           that.check($item);
         }
       });
