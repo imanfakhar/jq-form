@@ -353,7 +353,7 @@ describe('jqForm Plugin: Test Suite', function() {
 
     it('should check item on keyup event', function() {
       var event = jQuery.Event('keyup');
-      event.srcElement = this.$input;
+      event.target = this.$input;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).toHaveBeenCalledWith(this.$input);
@@ -362,7 +362,7 @@ describe('jqForm Plugin: Test Suite', function() {
     it('should not check item on keyup event if item is input[type=button]', function() {
       var $button = $('<input type="button"/>');
       var event = jQuery.Event('keyup');
-      event.srcElement = $button;
+      event.target = $button;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).not.toHaveBeenCalled();
@@ -371,7 +371,7 @@ describe('jqForm Plugin: Test Suite', function() {
     it('should not check item on keyup event if item is input[type=image]', function() {
       var $button = $('<input type="image"/>');
       var event = jQuery.Event('keyup');
-      event.srcElement = $button;
+      event.target = $button;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).not.toHaveBeenCalled();
@@ -380,7 +380,7 @@ describe('jqForm Plugin: Test Suite', function() {
     it('should not check item on keyup event if item is input[type=reset]', function() {
       var $button = $('<input type="reset"/>');
       var event = jQuery.Event('keyup');
-      event.srcElement = $button;
+      event.target = $button;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).not.toHaveBeenCalled();
@@ -389,7 +389,7 @@ describe('jqForm Plugin: Test Suite', function() {
     it('should not check item on keyup event if item is a button', function() {
       var $button = $('<button></button>');
       var event = jQuery.Event('keyup');
-      event.srcElement = $button;
+      event.target = $button;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).not.toHaveBeenCalled();
@@ -397,7 +397,7 @@ describe('jqForm Plugin: Test Suite', function() {
 
     it('should check item on change event', function() {
       var event = jQuery.Event('change');
-      event.srcElement = this.$input;
+      event.target = this.$input;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).toHaveBeenCalledWith(this.$input);
@@ -407,7 +407,7 @@ describe('jqForm Plugin: Test Suite', function() {
 
     it('should check item on focusout event', function() {
       var event = jQuery.Event('focusout');
-      event.srcElement = this.$input;
+      event.target = this.$input;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).toHaveBeenCalledWith(this.$input);
@@ -416,7 +416,7 @@ describe('jqForm Plugin: Test Suite', function() {
     it('should not check item on focusout event if item is input[type=button]', function() {
       var $button = $('<input type="button"/>');
       var event = jQuery.Event('focusout');
-      event.srcElement = $button;
+      event.target = $button;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).not.toHaveBeenCalled();
@@ -425,7 +425,7 @@ describe('jqForm Plugin: Test Suite', function() {
     it('should not check item on focusout event if item is input[type=image]', function() {
       var $button = $('<input type="image"/>');
       var event = jQuery.Event('focusout');
-      event.srcElement = $button;
+      event.target = $button;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).not.toHaveBeenCalled();
@@ -434,7 +434,7 @@ describe('jqForm Plugin: Test Suite', function() {
     it('should not check item on focusout event if item is input[type=reset]', function() {
       var $button = $('<input type="reset"/>');
       var event = jQuery.Event('focusout');
-      event.srcElement = $button;
+      event.target = $button;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).not.toHaveBeenCalled();
@@ -443,7 +443,7 @@ describe('jqForm Plugin: Test Suite', function() {
     it('should not check item on focusout event if item is a button', function() {
       var $button = $('<button></button>');
       var event = jQuery.Event('focusout');
-      event.srcElement = $button;
+      event.target = $button;
 
       this.$input.trigger(event);
       expect(this.$plugin.check).not.toHaveBeenCalled();

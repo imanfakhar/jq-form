@@ -628,14 +628,14 @@
       var $form = that.$form;
 
       $form.on('keyup' + NAMESPACE + ' focusout' + NAMESPACE, function(event) {
-        var $item = $(event.srcElement);
+        var $item = $(event.target);
         if ($item.length > 0 && !isButton($item)) {
           that.check($item);
         }
       });
 
       $form.on('change' + NAMESPACE, function(event) {
-        var $item = $(event.srcElement);
+        var $item = $(event.target);
         that.check($item);
 
         addClasses($item, CSS_DIRTY);
