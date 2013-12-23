@@ -905,7 +905,7 @@
         $item = this.$form.find('input[name="' + name + '"]');
         value = $item.find(':selected').val();
       } else if ($item.is('input[type=checkbox]')) {
-        value = attr($item, 'checked');
+        value = $item.prop('checked') ? 'on' : '';
       } else {
         value = $.trim($item.val());
       }

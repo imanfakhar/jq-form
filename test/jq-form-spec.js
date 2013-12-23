@@ -868,7 +868,6 @@ describe('jqForm Plugin: Test Suite', function() {
 
     it('should add required error if checkbox is not checked', function() {
       this.$input.attr('required', 'required');
-      this.$input.val('foo');
       this.$input.removeAttr('checked');
 
       var errors = this.$plugin.check(this.$input);
