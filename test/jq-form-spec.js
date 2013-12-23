@@ -51,6 +51,7 @@ describe('jqForm Plugin: Test Suite', function() {
     expect($.fn.jqForm.options).toEqual({
       disableSubmit: false,
       dataType: 'json',
+      contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
       ajaxSubmit: true,
       isValid: jasmine.any(Function),
       onSubmitSuccess: jasmine.any(Function),
@@ -95,6 +96,7 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(plugin.opts).toEqual({
         disableSubmit: true,
         dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         ajaxSubmit: true,
         isValid: jasmine.any(Function),
         showErrors: true,
@@ -477,7 +479,7 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.attr('action', '/foo');
       this.$form.attr('method', 'POST');
 
-      this.$input = $('<input type="email" name="input-email"/>');
+      this.$input = $('<input type="email" name="foo" value="bar"/>');
       this.$form.append(this.$input);
 
       this.$form.jqForm();
@@ -526,6 +528,51 @@ describe('jqForm Plugin: Test Suite', function() {
       expect(this.$plugin.xhr).toBe(null);
     });
 
+    it('should submit form with json content type', function() {
+      var json = '{"foo": "bar"}';
+      window.JSON = jasmine.createSpyObj('JSON', ['stringify']);
+      window.JSON.stringify.andReturn(json);
+
+      this.$plugin.opts.contentType = 'application/json';
+      this.$plugin.submit();
+
+      expect($.ajax).toHaveBeenCalledWith({
+        url: '/foo',
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: json
+      });
+
+      expect(window.JSON.stringify).toHaveBeenCalledWith({
+        foo: 'bar'
+      });
+
+      expect(this.$plugin.xhr).toBe(this.xhr);
+      expect(this.$plugin.xhr.done).toHaveBeenCalled();
+      expect(this.$plugin.xhr.fail).toHaveBeenCalled();
+      expect(this.$plugin.xhr.always).toHaveBeenCalled();
+
+      spyOn(this.$plugin.opts, 'onSubmitSuccess');
+      this.$plugin.xhr.done.argsForCall[0][0]('foobar');
+      expect(this.$plugin.opts.onSubmitSuccess).toHaveBeenCalledWith('foobar');
+      expect(this.$plugin.xhr).not.toBe(null);
+
+      spyOn(this.$plugin.opts, 'onSubmitError');
+      var jqXhr = {
+        status: 500
+      };
+
+      this.$plugin.xhr.fail.argsForCall[0][0](jqXhr);
+      expect(this.$plugin.opts.onSubmitError).toHaveBeenCalled();
+      expect(this.$plugin.xhr).not.toBe(null);
+
+      spyOn(this.$plugin.opts, 'onSubmitComplete');
+      this.$plugin.xhr.always.argsForCall[0][0]();
+      expect(this.$plugin.opts.onSubmitComplete).toHaveBeenCalled();
+      expect(this.$plugin.xhr).toBe(null);
+    });
+
     it('should submit form and display server validation error', function() {
       this.$plugin.submit();
 
@@ -544,7 +591,7 @@ describe('jqForm Plugin: Test Suite', function() {
 
       spyOn(this.$plugin.opts, 'onSubmitError');
 
-      var response = '{"inputEmail": "Your email is already used"}';
+      var response = '{"foo": "Your email is already used"}';
 
       var jqXhr = {
         status: 400,
@@ -557,15 +604,15 @@ describe('jqForm Plugin: Test Suite', function() {
 
       expect(this.$form.hasClass('error')).toBe(true);
 
-      expect(this.$errors['inputEmail'].css('display')).toBe('block');
-      expect(this.$errors['inputEmail'].hasClass('jq-form-error')).toBe(true);
-      expect(this.$errors['inputEmail'].hasClass('error')).toBe(true);
-      expect(this.$errors['inputEmail'].html()).toBe('Your email is already used');
-      expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith({
+      expect(this.$errors['foo'].css('display')).toBe('block');
+      expect(this.$errors['foo'].hasClass('jq-form-error')).toBe(true);
+      expect(this.$errors['foo'].hasClass('error')).toBe(true);
+      expect(this.$errors['foo'].html()).toBe('Your email is already used');
+      expect(this.$errors['foo'].css).toHaveBeenCalledWith({
         display: '',
         top : 20
       });
-      expect(this.$errors['inputEmail'].css).toHaveBeenCalledWith('left', 20);
+      expect(this.$errors['foo'].css).toHaveBeenCalledWith('left', 20);
     });
 
     it('should not submit form during submit', function() {

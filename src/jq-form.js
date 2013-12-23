@@ -259,6 +259,20 @@
   };
 
   /**
+   * Check if given string starts with given pattern.
+   * @param {string} str String to check.
+   * @param {string} start Start pattern.
+   * @returns {boolean} True if string starts with given pattern, false otherwise.
+   */
+  var startsWith = function(str, start) {
+    if (String.prototype.startsWith) {
+      return str.startsWith(start);
+    } else {
+      return str.indexOf(start) === 0;
+    }
+  };
+
+  /**
    * Check if an element is required.
    * @param {jQuery...} $item Elements to check.
    * @returns {boolean} True if element is required, false otherwise.
@@ -708,18 +722,26 @@
 
         var method = attr($form, 'method');
         var url = attr($form, 'action');
-        var datas = $form.serialize();
         var $submit = $form.find(SUBMIT_BTNS);
 
         $submit
           .addClass(DISABLED)
           .attr(DISABLED, DISABLED);
 
+        var datas = $form.serialize();
+
+        var contentType = that.opts.contentType;
+        if (contentType === 'application/json' && JSON && JSON.stringify) {
+          datas = JSON.stringify(that.toJSON());
+        } else {
+          datas = $form.serialize();
+        }
+
         that.xhr = $.ajax({
           url: url,
           type: method,
           dataType: opts.dataType,
-          contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+          contentType: contentType,
           data: datas
         });
 
@@ -1394,6 +1416,7 @@
   $.fn.jqForm.options = {
     disableSubmit: false,
     dataType: 'json',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
     ajaxSubmit: true,
     isValid: returnTrue,
     onSubmitSuccess: noop,
