@@ -85,6 +85,13 @@
   var CSS_DIRTY = 'dirty';
 
   /**
+   * Css class added form once submitted.
+   * @type {string}
+   * @const
+   */
+  var CSS_SUBMITTED = 'submitted';
+
+  /**
    * Css class added on elements with errors.
    * @type {string}
    * @const
@@ -658,11 +665,7 @@
 
       $form.on('submit' + NAMESPACE, function(event) {
         event.preventDefault();
-        $form.addClass('submitted');
-        var valid = that.validate();
-        if (that.opts.ajaxSubmit && valid) {
-          that.submit();
-        }
+        that.validateAndSubmit();
       });
     },
 
@@ -718,6 +721,7 @@
         var $form = that.$form;
         var opts = that.opts;
 
+        addClasses($form, CSS_SUBMITTED);
         removeClasses($form, CSS_ERROR);
 
         var method = attr($form, 'method');
@@ -769,6 +773,15 @@
           that.xhr = null;
           $submit.removeClass(DISABLED).removeAttr(DISABLED);
         });
+      }
+    },
+
+    /** Validate form and submit if form is valid. */
+    validateAndSubmit: function() {
+      addClasses(this.$form, CSS_SUBMITTED);
+      var valid = this.validate();
+      if (this.opts.ajaxSubmit && valid) {
+        this.submit();
       }
     },
 
@@ -1366,21 +1379,6 @@
   $.fn.jqForm = function(settings) {
     var self = this;
 
-    self.destroy = function() {
-      $(self).data(PLUGIN_NAME).destroy();
-      return self;
-    };
-
-    self.clear = function() {
-      $(self).data(PLUGIN_NAME).clear();
-      return self;
-    };
-
-    self.validate = function() {
-      self.isValid();
-      return self;
-    };
-
     self.errors = function() {
       return $(self).data(PLUGIN_NAME).errors;
     };
@@ -1393,19 +1391,14 @@
       return $(self).data(PLUGIN_NAME).toJSON();
     };
 
-    self.fromJSON = function(obj) {
-      $(self).data(PLUGIN_NAME).fromJSON(obj);
-      return self;
-    };
-
-    /**
-     * Submit form.
-     * @return {$.fn} this object.
-     */
-    self.submit = function() {
-      $(self).data(PLUGIN_NAME).submit();
-      return self;
-    };
+    // Expose methods
+    $.each(['submit', 'validate', 'validateAndSubmit', 'fromJSON', 'clear', 'destroy'], function(idx, fn) {
+      self[fn] = function() {
+        var plugin = $(self).data(PLUGIN_NAME);
+        plugin[fn].apply(plugin, arguments);
+        return self;
+      };
+    });
 
     return self.each(function() {
       var form = $(this).data(PLUGIN_NAME);

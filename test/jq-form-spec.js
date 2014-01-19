@@ -132,9 +132,59 @@ describe('jqForm Plugin: Test Suite', function() {
     it("should submit form", function() {
       spyOn(this.$plugin, 'submit');
 
-      this.$form.jqForm().submit();
+      var result = this.$form.jqForm().submit();
 
+      expect(result).toBe(this.$form);
       expect(this.$plugin.submit).toHaveBeenCalled();
+    });
+
+    it("should validate form", function() {
+      spyOn(this.$plugin, 'validate');
+
+      var result = this.$form.jqForm().validate();
+
+      expect(result).toBe(this.$form);
+      expect(this.$plugin.validate).toHaveBeenCalled();
+    });
+
+    it("should validate and submit form", function() {
+      spyOn(this.$plugin, 'validateAndSubmit');
+
+      var result = this.$form.jqForm().validateAndSubmit();
+
+      expect(result).toBe(this.$form);
+      expect(this.$plugin.validateAndSubmit).toHaveBeenCalled();
+    });
+
+    it("should clear form", function() {
+      spyOn(this.$plugin, 'clear');
+
+      var result = this.$form.jqForm().clear();
+
+      expect(result).toBe(this.$form);
+      expect(this.$plugin.clear).toHaveBeenCalled();
+    });
+
+    it("should destroy form", function() {
+      spyOn(this.$plugin, 'destroy');
+
+      var result = this.$form.jqForm().destroy();
+
+      expect(result).toBe(this.$form);
+      expect(this.$plugin.destroy).toHaveBeenCalled();
+    });
+
+    it("should populate form with json", function() {
+      var json = {
+        id: 1
+      };
+
+      spyOn(this.$plugin, 'fromJSON');
+
+      var result = this.$form.jqForm().fromJSON(json);
+
+      expect(result).toBe(this.$form);
+      expect(this.$plugin.fromJSON).toHaveBeenCalledWith(json);
     });
   });
 
