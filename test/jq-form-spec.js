@@ -57,6 +57,7 @@ describe('jqForm Plugin: Test Suite', function() {
       onSubmitSuccess: jasmine.any(Function),
       onSubmitError: jasmine.any(Function),
       onSubmitComplete: jasmine.any(Function),
+      clearOnSuccess: false,
       showErrors: true,
       errorClass: 'error',
       validations: {},
@@ -103,6 +104,7 @@ describe('jqForm Plugin: Test Suite', function() {
         onSubmitSuccess: jasmine.any(Function),
         onSubmitError: jasmine.any(Function),
         onSubmitComplete: jasmine.any(Function),
+        clearOnSuccess: false,
         errorClass: 'error',
         validations: {},
         messages: {
@@ -557,7 +559,10 @@ describe('jqForm Plugin: Test Suite', function() {
       spyOn($, 'ajax').andReturn(this.xhr);
     });
 
-    it('should submit form', function() {
+    it('should submit form and clear form on success', function() {
+      this.$plugin.opts.clearOnSuccess = true;
+      spyOn(this.$plugin, 'clear').andCallThrough();
+
       this.$plugin.submit();
 
       expect($.ajax).toHaveBeenCalledWith({
@@ -577,6 +582,47 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$plugin.xhr.done.argsForCall[0][0]('foobar');
       expect(this.$plugin.opts.onSubmitSuccess).toHaveBeenCalledWith('foobar');
       expect(this.$plugin.xhr).not.toBe(null);
+      expect(this.$plugin.clear).toHaveBeenCalled();
+
+      spyOn(this.$plugin.opts, 'onSubmitError');
+      var jqXhr = {
+        status: 500
+      };
+
+      this.$plugin.xhr.fail.argsForCall[0][0](jqXhr);
+      expect(this.$plugin.opts.onSubmitError).toHaveBeenCalled();
+      expect(this.$plugin.xhr).not.toBe(null);
+
+      spyOn(this.$plugin.opts, 'onSubmitComplete');
+      this.$plugin.xhr.always.argsForCall[0][0]();
+      expect(this.$plugin.opts.onSubmitComplete).toHaveBeenCalled();
+      expect(this.$plugin.xhr).toBe(null);
+    });
+
+    it('should submit form and do not clear form on success', function() {
+      this.$plugin.opts.clearOnSuccess = false;
+      spyOn(this.$plugin, 'clear').andCallThrough();
+
+      this.$plugin.submit();
+
+      expect($.ajax).toHaveBeenCalledWith({
+        url: '/foo',
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: this.datas
+      });
+
+      expect(this.$plugin.xhr).toBe(this.xhr);
+      expect(this.$plugin.xhr.done).toHaveBeenCalled();
+      expect(this.$plugin.xhr.fail).toHaveBeenCalled();
+      expect(this.$plugin.xhr.always).toHaveBeenCalled();
+
+      spyOn(this.$plugin.opts, 'onSubmitSuccess');
+      this.$plugin.xhr.done.argsForCall[0][0]('foobar');
+      expect(this.$plugin.opts.onSubmitSuccess).toHaveBeenCalledWith('foobar');
+      expect(this.$plugin.xhr).not.toBe(null);
+      expect(this.$plugin.clear).not.toHaveBeenCalled();
 
       spyOn(this.$plugin.opts, 'onSubmitError');
       var jqXhr = {

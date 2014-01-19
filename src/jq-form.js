@@ -735,7 +735,7 @@
         var datas = $form.serialize();
 
         var contentType = that.opts.contentType;
-        if (contentType === 'application/json' && JSON && JSON.stringify) {
+        if (startsWith(contentType, 'application/json') && JSON && JSON.stringify) {
           datas = JSON.stringify(that.toJSON());
         } else {
           datas = $form.serialize();
@@ -750,6 +750,9 @@
         });
 
         that.xhr.done(function() {
+          if (opts.clearOnSuccess) {
+            that.clear();
+          }
           opts.onSubmitSuccess.apply(null, arguments);
         });
 
@@ -1424,6 +1427,7 @@
     onSubmitSuccess: noop,
     onSubmitError: noop,
     onSubmitComplete: noop,
+    clearOnSuccess: false,
     showErrors: true,
     errorClass: 'error',
     validations: {},
