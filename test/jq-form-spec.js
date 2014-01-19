@@ -123,6 +123,21 @@ describe('jqForm Plugin: Test Suite', function() {
     });
   });
 
+  describe('jqForm: checkpublic functions', function() {
+    beforeEach(function() {
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+    });
+
+    it("should submit form", function() {
+      spyOn(this.$plugin, 'submit');
+
+      this.$form.jqForm().submit();
+
+      expect(this.$plugin.submit).toHaveBeenCalled();
+    });
+  });
+
   describe('jqForm: toJSON/fromJSON', function() {
     it("should serialize form to json object with simple string values", function() {
       this.$input = $('<input type="text" name="foo1" value="bar1"/>');

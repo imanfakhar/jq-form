@@ -1398,6 +1398,15 @@
       return self;
     };
 
+    /**
+     * Submit form.
+     * @return {$.fn} this object.
+     */
+    self.submit = function() {
+      $(self).data(PLUGIN_NAME).submit();
+      return self;
+    };
+
     return self.each(function() {
       var form = $(this).data(PLUGIN_NAME);
       if (!form) {
