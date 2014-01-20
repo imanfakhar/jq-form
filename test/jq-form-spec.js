@@ -28,6 +28,7 @@ describe('jqForm Plugin: Test Suite', function() {
     spyOn($.fn, 'addClass').andCallThrough();
     spyOn($.fn, 'removeClass').andCallThrough();
     spyOn($.fn, 'on').andCallThrough();
+    spyOn($.fn, 'off').andCallThrough();
     spyOn($.fn, 'css').andCallThrough();
 
     spyOn($.fn, 'position').andReturn({
@@ -187,6 +188,50 @@ describe('jqForm Plugin: Test Suite', function() {
 
       expect(result).toBe(this.$form);
       expect(this.$plugin.fromJSON).toHaveBeenCalledWith(json);
+    });
+  });
+
+  describe('jqForm: destroy/unbind', function() {
+    beforeEach(function() {
+      this.$input = $('<input type="text" name="foo1" value="bar1"/>');
+      this.$select = $('<select name="foo2"><option value="bar2" selected></option></select>');
+
+      this.$form.append(this.$input);
+      this.$form.append(this.$select);
+
+      this.$div = $('<div></div>');
+      this.$div.append(this.$form);
+
+      this.$form.jqForm();
+      this.$plugin = this.$form.data('jqForm');
+    });
+
+    it("should unbind events", function() {
+      $.fn.off.reset();
+      this.$plugin.unbind();
+      expect(this.$plugin.$form.off).toHaveBeenCalledWith('.jqForm');
+    });
+
+    it("should unbind events", function() {
+      spyOn(this.$plugin, 'unbind').andCallThrough();
+      this.$plugin.unbind.reset();
+      var unbind = this.$plugin.unbind;
+
+      this.$plugin.destroy();
+      expect(this.$plugin.$form).toBe(null);
+      expect(this.$plugin.$errors).toBe(null);
+      expect(this.$plugin.errors).toBe(null);
+      expect(this.$plugin.opts).toBe(null);
+      expect(unbind).toHaveBeenCalled();
+    });
+
+    it("should destroy plugin when form is removed", function() {
+      var $plugin = this.$plugin;
+      spyOn($plugin, 'destroy').andCallThrough();
+      var destroy = $plugin.destroy;
+
+      this.$form.remove();
+      expect(destroy).toHaveBeenCalled();
     });
   });
 

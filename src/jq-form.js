@@ -39,6 +39,16 @@
   var noop = function() {
   };
 
+  // Add special event to destroy plugin before it is removed from the DOM
+  // Think about DOM Mutation Observer (DOMNodeRemoved event) if needed
+  $.event.special.jqFormRemoved = {
+    remove: function(o) {
+      if (o.handler) {
+        o.handler();
+      }
+    }
+  };
+
   /** Namespace used to bind user events. */
   var NAMESPACE = '.jqForm';
 
@@ -666,6 +676,10 @@
       $form.on('submit' + NAMESPACE, function(event) {
         event.preventDefault();
         that.validateAndSubmit();
+      });
+
+      $form.on('jqFormRemoved', function() {
+        that.destroy();
       });
     },
 
@@ -1374,8 +1388,18 @@
     /** Destroy plugin internal datas. */
     destroy: function() {
       var that = this;
-      that.unbind();
-      that.$form = that.opts = that.errors = that.$errors = null;
+
+      // Prevent multiple calls
+      if (that.$form !== null) {
+        that.unbind();
+
+        // Destroy everything
+        for (var i in that) {
+          if (that.hasOwnProperty(i)) {
+            that[i] = null;
+          }
+        }
+      }
     }
   };
 
