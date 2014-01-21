@@ -658,29 +658,36 @@
       var that = this;
       var $form = that.$form;
 
-      $form.on('keyup' + NAMESPACE + ' focusout' + NAMESPACE, function(event) {
+      var keyup = function(event) {
         var $item = $(event.target);
         if ($item.length > 0 && !isButton($item)) {
           that.check($item);
         }
-      });
+      };
 
-      $form.on('change' + NAMESPACE, function(event) {
+      var change = function(event) {
         var $item = $(event.target);
         that.check($item);
 
         addClasses($item, CSS_DIRTY);
         addClasses($form, CSS_DIRTY);
-      });
+      };
 
-      $form.on('submit' + NAMESPACE, function(event) {
+      var submit = function(event) {
         event.preventDefault();
         that.validateAndSubmit();
-      });
+      };
 
-      $form.on('jqFormRemoved', function() {
+      var destroy = function() {
         that.destroy();
-      });
+        that = null;
+        $form = null;
+      };
+
+      $form.on('keyup' + NAMESPACE + ' focusout' + NAMESPACE, keyup);
+      $form.on('change' + NAMESPACE, change);
+      $form.on('submit' + NAMESPACE, submit);
+      $form.on('jqFormRemoved', destroy);
     },
 
     /** Get items used by validation */
@@ -690,11 +697,11 @@
 
     /** Append error boxes after each controls */
     appendErrorAreas: function() {
+      // Save bytes
       var that = this;
+      var $errors = {};
 
-      var $errors = that.$errors = {};
-
-      that.$items().each(function() {
+      var onEach = function() {
         var $this = $(this);
         var name = that.name($this);
 
@@ -705,7 +712,10 @@
           $errors[name] = $error;
           $this.after($error);
         }
-      });
+      };
+
+      that.$items().each(onEach);
+      that.$errors = $errors;
     },
 
     /** Validate form. */
@@ -713,13 +723,15 @@
       var that = this;
       var $first = null;
 
-      that.$items().each(function() {
+      var onEach = function() {
         var $this = $(this);
         var error = that.check($this);
         if (error.length > 0 && !$first) {
           $first = $this;
         }
-      });
+      };
+
+      that.$items().each(onEach);
 
       if ($first) {
         $first.eq(0).focus();
@@ -763,14 +775,14 @@
           data: datas
         });
 
-        that.xhr.done(function() {
+        var onDone = function() {
           if (opts.clearOnSuccess) {
             that.clear();
           }
           opts.onSubmitSuccess.apply(null, arguments);
-        });
+        };
 
-        that.xhr.fail(function(jqXhr) {
+        var onFail = function(jqXhr) {
           addClasses($form, CSS_ERROR);
 
           if (jqXhr.status === 400) {
@@ -783,13 +795,17 @@
           }
 
           opts.onSubmitError.apply(null, arguments);
-        });
+        };
 
-        that.xhr.always(function() {
+        var onAlways = function() {
           opts.onSubmitComplete.apply(null, arguments);
           that.xhr = null;
           $submit.removeClass(DISABLED).removeAttr(DISABLED);
-        });
+        };
+
+        that.xhr.done(onDone);
+        that.xhr.fail(onFail);
+        that.xhr.always(onAlways);
       }
     },
 
@@ -861,11 +877,12 @@
 
       // Add error class and display message
       if (errors.length > 0) {
-        this.displayErrors($item, errors);
+        that.displayErrors($item, errors);
       }
 
-      this.errors[name] = errors.length > 0;
-      this.checkForm();
+      that.errors[name] = errors.length > 0;
+      that.checkForm();
+
       return errors;
     },
 
@@ -1391,6 +1408,7 @@
 
       // Prevent multiple calls
       if (that.$form !== null) {
+        that.$form.removeData();
         that.unbind();
 
         // Destroy everything
@@ -1427,7 +1445,7 @@
       };
     });
 
-    return self.each(function() {
+    return this.each(function() {
       var form = $(this).data(PLUGIN_NAME);
       if (!form) {
         var opts = $.extend({}, $.fn.jqForm.options);

@@ -5,45 +5,79 @@
   <link rel="stylesheet" href="jq-form.css"/>
 
   <script type="text/javascript" src="jquery/jquery.js"></script>
-  <script type="text/javascript" src="jq-form.js"></script>
+
+  <script type="text/javascript">
+    // Set cache to zero (use to test memory leak)
+    $.expr.cacheLength = 1;
+  </script>
+
 </head>
 <body>
 
 <form id="test-form" name="my-form" action="#">
   <div>
     <label>Input text (required, min-length = 3, max-length=10, pattern=[A-Za-z]+) :</label>
-    <input type="text" name="input-text" required data-min-length="3" maxlength="10" pattern="[A-Za-z]+"/>
+    <input id="input-text" type="text" name="input-text" required data-min-length="3" maxlength="10" pattern="[A-Za-z]+"/>
   </div>
   <div>
     <label>Input email (required, min-length = 3, max-length=50, pattern=*@gmail.com) :</label>
-    <input type="email" name="input-email" required data-min-length="3" maxlength="50" pattern="(.*)@gmail.com"/>
+    <input id="input-email" type="email" name="input-email" required data-min-length="3" maxlength="50" pattern="(.*)@gmail.com"/>
   </div>
   <div>
     <label>Input url (required, min-length = 3, max-length=50, pattern=https://(*+)) :</label>
-    <input type="url" name="input-url" required data-min-length="3" maxlength="50" pattern="https://(.+)"/>
+    <input id="input-url" type="url" name="input-url" required data-min-length="3" maxlength="50" pattern="https://(.+)"/>
   </div>
   <div>
     <label>Input number (required, min = 0, max=10) :</label>
-    <input type="number" name="input-number" required min="0" max="10" />
+    <input id="input-number" type="number" name="input-number" required min="0" max="10" />
   </div>
   <div>
     <label>Input date (required, min = 2013-02-01, max=2013-12-31) :</label>
-    <input type="date" name="input-date" required min="2013-02-01" max="2013-12-31" />
+    <input id="input-date" type="date" name="input-date" required min="2013-02-01" max="2013-12-31" />
   </div>
   <div>
     <label>Input month (required, min = 2013-02, max=2013-12) :</label>
-    <input type="month" name="input-month" required min="2013-02" max="2013-12" />
+    <input id="input-month" type="month" name="input-month" required min="2013-02" max="2013-12" />
   </div>
   <div>
     <label>Input time (required, min = 10:00:00, max=15:00:00) :</label>
-    <input type="time" name="input-time" required min="10:00:00" max="15:00:00" />
+    <input id="input-time" type="time" name="input-time" required min="10:00:00" max="15:00:00" />
   </div>
 
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
+<div>
+  <span>Add valid data : </span>
+  <button id="btn-add" type="button" class="btn">Fill Form</button>
+</div>
+
+<div>
+  <span>Remove form (check destroy event) : </span>
+  <button id="btn-remove" type="reset" class="btn">Remove</button>
+</div>
+
+<script type="text/javascript" src="jq-form.js"></script>
+
 <script type="text/javascript">
   $('#test-form').jqForm();
+
+  $('#btn-remove').on('click', function() {
+    $('#test-form').remove();
+
+    // Clear sizzle form cache (size of cache is one, so it will remove form entries)
+    $('button[type!="submit"]');
+  });
+
+  $('#btn-add').on('click', function() {
+    $('#input-text').val('hello');
+    $('#input-email').val('john.doe@gmail.com');
+    $('#input-number').val(5);
+    $('#input-url').val('https://www.google.fr');
+    $('#input-date').val('2013-09-01');
+    $('#input-month').val('2013-09');
+    $('#input-time').val('11:00:00');
+  });
 </script>
 </body>
 </html>
