@@ -81,18 +81,25 @@ describe('jqForm Plugin: Test Suite', function() {
 
   describe('jqForm: check initialization', function() {
     it('should use default options', function() {
+      // WHEN
       this.$form.jqForm();
 
+      // THEN
       var plugin = this.$form.data('jqForm');
       expect(plugin.opts).toBeDefined();
       expect(plugin.opts).toEqual($.fn.jqForm.options);
     });
 
     it('should override default options', function() {
-      this.$form.jqForm({
+      // GIVEN
+      var options = {
         disableSubmit: true
-      });
+      };
 
+      // WHEN
+      this.$form.jqForm(options);
+
+      // THEN
       var plugin = this.$form.data('jqForm');
       expect(plugin.opts).toBeDefined();
       expect(plugin.opts).toEqual({
@@ -133,59 +140,77 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it("should submit form", function() {
+      // GIVEN
       spyOn(this.$plugin, 'submit');
 
+      // WHEN
       var result = this.$form.jqForm().submit();
 
+      // THEN
       expect(result).toBe(this.$form);
       expect(this.$plugin.submit).toHaveBeenCalled();
     });
 
     it("should validate form", function() {
+      // GIVEN
       spyOn(this.$plugin, 'validate');
 
+      // WHEN
       var result = this.$form.jqForm().validate();
 
+      // THEN
       expect(result).toBe(this.$form);
       expect(this.$plugin.validate).toHaveBeenCalled();
     });
 
     it("should validate and submit form", function() {
+      // GIVEN
       spyOn(this.$plugin, 'validateAndSubmit');
 
+      // WHEN
       var result = this.$form.jqForm().validateAndSubmit();
 
+      // THEN
       expect(result).toBe(this.$form);
       expect(this.$plugin.validateAndSubmit).toHaveBeenCalled();
     });
 
     it("should clear form", function() {
+      // GIVEN
       spyOn(this.$plugin, 'clear');
 
+      // WHEN
       var result = this.$form.jqForm().clear();
 
+      // THEN
       expect(result).toBe(this.$form);
       expect(this.$plugin.clear).toHaveBeenCalled();
     });
 
     it("should destroy form", function() {
+      // GIVEN
       spyOn(this.$plugin, 'destroy');
 
+      // WHEN
       var result = this.$form.jqForm().destroy();
 
+      // THEN
       expect(result).toBe(this.$form);
       expect(this.$plugin.destroy).toHaveBeenCalled();
     });
 
     it("should populate form with json", function() {
+      // GIVEN
       var json = {
         id: 1
       };
 
       spyOn(this.$plugin, 'fromJSON');
 
+      // WHEN
       var result = this.$form.jqForm().fromJSON(json);
 
+      // THEN
       expect(result).toBe(this.$form);
       expect(this.$plugin.fromJSON).toHaveBeenCalledWith(json);
     });
@@ -207,17 +232,26 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it("should unbind events", function() {
+      // GIVEN
       $.fn.off.reset();
+
+      // WHEN
       this.$plugin.unbind();
+
+      // THEN
       expect(this.$plugin.$form.off).toHaveBeenCalledWith('.jqForm');
     });
 
     it("should unbind events", function() {
+      // GIVEN
       spyOn(this.$plugin, 'unbind').andCallThrough();
       this.$plugin.unbind.reset();
       var unbind = this.$plugin.unbind;
 
+      // WHEN
       this.$plugin.destroy();
+
+      // THEN
       expect(this.$plugin.$form).toBe(null);
       expect(this.$plugin.$errors).toBe(null);
       expect(this.$plugin.errors).toBe(null);
@@ -226,17 +260,22 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it("should destroy plugin when form is removed", function() {
+      // GIVEN
       var $plugin = this.$plugin;
       spyOn($plugin, 'destroy').andCallThrough();
       var destroy = $plugin.destroy;
 
+      // WHEN
       this.$form.remove();
+
+      // THEN
       expect(destroy).toHaveBeenCalled();
     });
   });
 
   describe('jqForm: toJSON/fromJSON', function() {
     it("should serialize form to json object with simple string values", function() {
+      // GIVEN
       this.$input = $('<input type="text" name="foo1" value="bar1"/>');
       this.$select = $('<select name="foo2"><option value="bar2" selected></option></select>');
 
@@ -246,7 +285,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       var obj = this.$plugin.toJSON();
+
+      // THEN
       expect(obj).toEqual({
         foo1: 'bar1',
         foo2: 'bar2'
@@ -254,6 +296,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it("should serialize form to json object with nested object", function() {
+      // GIVEN
       this.$input1 = $('<input type="text" name="foo.foo1" value="bar1"/>');
       this.$input2 = $('<input type="text" name="foobar" value="bar1"/>');
       this.$select = $('<select name="foo.foo2"><option value="bar2" selected></option></select>');
@@ -265,7 +308,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       var obj = this.$plugin.toJSON();
+
+      // THEN
       expect(obj).toEqual({
         foobar: 'bar1',
         foo: {
@@ -276,6 +322,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it("should serialize form to json object with nested object", function() {
+      // GIVEN
       this.$input1 = $('<input type="text" name="foo.foo1" value="bar1"/>');
       this.$input2 = $('<input type="text" name="foobar" value="bar1"/>');
       this.$select = $('<select name="foo.foo2"><option value="bar2" selected></option></select>');
@@ -287,7 +334,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       var obj = this.$plugin.toJSON();
+
+      // THEN
       expect(obj).toEqual({
         foobar: 'bar1',
         foo: {
@@ -298,6 +348,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it("should serialize form to json object with arrays", function() {
+      // GIVEN
       this.$input1 = $('<input type="text" name="foo[]" value="bar1"/>');
       this.$input2 = $('<input type="text" name="foo[]" value="bar2"/>');
       this.$select = $('<select name="foobar"><option value="bar1" selected></option></select>');
@@ -309,7 +360,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       var obj = this.$plugin.toJSON();
+
+      // THEN
       expect(obj).toEqual({
         foobar: 'bar1',
         foo: ['bar1', 'bar2']
@@ -317,6 +371,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it("should serialize form to json object with arrays", function() {
+      // GIVEN
       this.$input1 = $('<input type="text" name="foo.bar[0].name" value="bar1"/>');
       this.$input2 = $('<input type="text" name="foo.bar[1].name" value="bar2"/>');
       this.$select = $('<select name="foobar"><option value="bar1" selected></option></select>');
@@ -328,7 +383,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       var obj = this.$plugin.toJSON();
+
+      // THEN
       expect(obj).toEqual({
         foobar: 'bar1',
         foo: {
@@ -341,6 +399,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it("should serialize form from json object with simple string values", function() {
+      // GIVEN
       this.$input = $('<input type="text" name="foo1"/>');
       this.$select = $('<select name="foo2"><option value="bar2"></option></select>');
 
@@ -350,16 +409,19 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       this.$plugin.fromJSON({
         foo1: 'bar1',
         foo2: 'bar2'
       });
 
+      // THEN
       expect(this.$input.val()).toEqual('bar1');
       expect(this.$select.val()).toEqual('bar2');
     });
 
     it("should serialize form from json object with complex string values", function() {
+      // GIVEN
       this.$input = $('<input type="text" name="foo.foo1"/>');
       this.$select = $('<select name="foo.foo2"><option value="bar2"></option></select>');
 
@@ -369,6 +431,7 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       this.$plugin.fromJSON({
         foo: {
           foo1: 'bar1',
@@ -376,11 +439,13 @@ describe('jqForm Plugin: Test Suite', function() {
         }
       });
 
+      // THEN
       expect(this.$input.val()).toEqual('bar1');
       expect(this.$select.val()).toEqual('bar2');
     });
 
     it("should serialize form from json and check checkbox", function() {
+      // GIVEN
       this.$checkbox1 = $('<input type="checkbox" name="foo"/>');
       this.$checkbox2 = $('<input type="checkbox" name="bar"/>');
 
@@ -390,16 +455,19 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       this.$plugin.fromJSON({
         foo: true,
         bar: false
       });
 
+      // THEN
       expect(this.$checkbox1.attr('checked')).toBeDefined();
       expect(this.$checkbox2.attr('checked')).toBeFalsy();
     });
 
     it("should serialize form from json and select radio button", function() {
+      // GIVEN
       this.$radio1 = $('<input type="radio" name="foo" value="bar1"/>');
       this.$radio2 = $('<input type="radio" name="foo" value="bar2"/>');
 
@@ -409,10 +477,12 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
 
+      // WHEN
       this.$plugin.fromJSON({
         foo: 'bar1'
       });
 
+      // THEN
       expect(this.$radio1.attr('selected')).toBeDefined();
       expect(this.$radio2.attr('selected')).toBeFalsy();
     });
@@ -420,6 +490,7 @@ describe('jqForm Plugin: Test Suite', function() {
 
   describe('jqForm: check ajax submission', function() {
     it("should not submit form if ajax submission is disabled", function() {
+      // GIVEN
       this.$input = $('<input type="text"/>');
       this.$form.append(this.$input);
 
@@ -432,11 +503,16 @@ describe('jqForm Plugin: Test Suite', function() {
       spyOn(this.$plugin, 'submit');
 
       expect(this.$plugin.$form.on).toHaveBeenCalledWith('submit.jqForm', jasmine.any(Function));
+
+      // WHEN
       this.$plugin.$form.trigger('submit');
+
+      // THEN
       expect(this.$plugin.submit).not.toHaveBeenCalled();
     });
 
     it("should submit form if ajax submission is enabled", function() {
+      // GIVEN
       this.$input = $('<input type="text"/>');
       this.$form.append(this.$input);
 
@@ -449,7 +525,11 @@ describe('jqForm Plugin: Test Suite', function() {
       spyOn(this.$plugin, 'submit');
 
       expect(this.$plugin.$form.on).toHaveBeenCalledWith('submit.jqForm', jasmine.any(Function));
+
+      // WHEN
       this.$plugin.$form.trigger('submit');
+
+      // THEN
       expect(this.$plugin.submit).toHaveBeenCalled();
     });
   });
@@ -466,120 +546,172 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should check item on keyup event', function() {
+      // GIVEN
       var event = jQuery.Event('keyup');
       event.target = this.$input;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).toHaveBeenCalledWith(this.$input);
     });
 
     it('should not check item on keyup event if item is input[type=button]', function() {
+      // GIVEN
       var $button = $('<input type="button"/>');
       var event = jQuery.Event('keyup');
       event.target = $button;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).not.toHaveBeenCalled();
     });
 
     it('should not check item on keyup event if item is input[type=image]', function() {
+      // GIVEN
       var $button = $('<input type="image"/>');
       var event = jQuery.Event('keyup');
       event.target = $button;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).not.toHaveBeenCalled();
     });
 
     it('should not check item on keyup event if item is input[type=reset]', function() {
+      // GIVEN
       var $button = $('<input type="reset"/>');
       var event = jQuery.Event('keyup');
       event.target = $button;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).not.toHaveBeenCalled();
     });
 
     it('should not check item on keyup event if item is a button', function() {
+      // GIVEN
       var $button = $('<button></button>');
       var event = jQuery.Event('keyup');
       event.target = $button;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).not.toHaveBeenCalled();
     });
 
     it('should check item on change event', function() {
+      // GIVEN
       var event = jQuery.Event('change');
       event.target = this.$input;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).toHaveBeenCalledWith(this.$input);
       expect(this.$form.hasClass('dirty')).toBe(true);
       expect(this.$input.hasClass('dirty')).toBe(true);
     });
 
     it('should check item on focusout event', function() {
+      // GIVEN
       var event = jQuery.Event('focusout');
       event.target = this.$input;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).toHaveBeenCalledWith(this.$input);
     });
 
     it('should not check item on focusout event if item is input[type=button]', function() {
+      // GIVEN
       var $button = $('<input type="button"/>');
       var event = jQuery.Event('focusout');
       event.target = $button;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).not.toHaveBeenCalled();
     });
 
     it('should not check item on focusout event if item is input[type=image]', function() {
+      // GIVEN
       var $button = $('<input type="image"/>');
       var event = jQuery.Event('focusout');
       event.target = $button;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).not.toHaveBeenCalled();
     });
 
     it('should not check item on focusout event if item is input[type=reset]', function() {
+      // GIVEN
       var $button = $('<input type="reset"/>');
       var event = jQuery.Event('focusout');
       event.target = $button;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).not.toHaveBeenCalled();
     });
 
     it('should not check item on focusout event if item is a button', function() {
+      // GIVEN
       var $button = $('<button></button>');
       var event = jQuery.Event('focusout');
       event.target = $button;
 
+      // WHEN
       this.$input.trigger(event);
+
+      // THEN
       expect(this.$plugin.check).not.toHaveBeenCalled();
     });
 
     it('should not submit if form is not valid', function() {
+      // GIVEN
       var event = jQuery.Event('submit');
       spyOn(this.$plugin, 'validate').andReturn(false);
       spyOn(this.$plugin, 'submit');
 
+      // WHEN
       this.$form.trigger(event);
+
+      // THEN
       expect(this.$form.hasClass('submitted')).toBe(true);
       expect(this.$plugin.validate).toHaveBeenCalled();
       expect(this.$plugin.submit).not.toHaveBeenCalled();
     });
 
     it('should submit if form is valid', function() {
+      // GIVEN
       var event = jQuery.Event('submit');
       spyOn(this.$plugin, 'validate').andReturn(true);
       spyOn(this.$plugin, 'submit');
 
+      // WHEN
       this.$form.trigger(event);
+
+      // THEN
       expect(this.$form.hasClass('submitted')).toBe(true);
       expect(this.$plugin.validate).toHaveBeenCalled();
       expect(this.$plugin.submit).toHaveBeenCalled();
@@ -605,11 +737,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should submit form and clear form on success', function() {
+      // GIVEN
       this.$plugin.opts.clearOnSuccess = true;
       spyOn(this.$plugin, 'clear').andCallThrough();
 
+      // WHEN
       this.$plugin.submit();
 
+      // THEN
       expect($.ajax).toHaveBeenCalledWith({
         url: '/foo',
         type: 'POST',
@@ -645,11 +780,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should submit form and do not clear form on success', function() {
+      // GIVEN
       this.$plugin.opts.clearOnSuccess = false;
       spyOn(this.$plugin, 'clear').andCallThrough();
 
+      // WHEN
       this.$plugin.submit();
 
+      // THEN
       expect($.ajax).toHaveBeenCalledWith({
         url: '/foo',
         type: 'POST',
@@ -685,13 +823,17 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should submit form with json content type', function() {
+      // GIVEN
       var json = '{"foo": "bar"}';
       window.JSON = jasmine.createSpyObj('JSON', ['stringify']);
       window.JSON.stringify.andReturn(json);
 
       this.$plugin.opts.contentType = 'application/json';
+
+      // WHEN
       this.$plugin.submit();
 
+      // THEN
       expect($.ajax).toHaveBeenCalledWith({
         url: '/foo',
         type: 'POST',
@@ -730,8 +872,10 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should submit form and display server validation error', function() {
+      // WHEN
       this.$plugin.submit();
 
+      // THEN
       expect($.ajax).toHaveBeenCalledWith({
         url: '/foo',
         type: 'POST',
@@ -772,14 +916,20 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should not submit form during submit', function() {
+      // GIVEN
       this.$plugin.xhr = {};
+
+      // WHEN
       this.$plugin.submit();
+
+      // THEN
       expect($.ajax).not.toHaveBeenCalled();
     });
   });
 
   describe('jqForm: check custom validation', function() {
     it("should detect custom validation", function() {
+      // GIVEN
       this.$input = $('<input type="text" />');
       this.$form.append(this.$input);
 
@@ -789,7 +939,11 @@ describe('jqForm Plugin: Test Suite', function() {
       });
 
       this.$plugin = this.$form.data('jqForm');
+
+      // WHEN
       var result = this.$plugin.validate();
+
+      // THEN
       expect(result).toBe(false);
       expect(this.$plugin.errors.$$custom).toBe(true);
     });
@@ -797,13 +951,18 @@ describe('jqForm Plugin: Test Suite', function() {
 
   describe('jqForm: check focus on error', function() {
     it("should detect custom validation", function() {
+      // GIVEN
       spyOn($.fn, 'focus').andCallThrough();
       this.$input = $('<input type="text" required="required" />');
       this.$form.append(this.$input);
 
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
+
+      // WHEN
       var result = this.$plugin.validate();
+
+      // THEN
       expect(result).toBe(false);
       expect(this.$input.focus).toHaveBeenCalled();
     });
@@ -820,11 +979,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if text is empty', function() {
+      // GIVEN
       this.$input.attr('required', 'required');
       this.$input.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$input);
 
+      // THEN
       expect(this.$input.attr('data-name')).toBe('inputText');
       expect(this.$input.hasClass('error')).toBe(true);
       expect(this.$input.hasClass('error-required')).toBe(true);
@@ -859,11 +1021,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min-length error if text is too small', function() {
+      // GIVEN
       this.$input.attr('data-min-length', '5');
       this.$input.val('foo');
 
+      // WHEN
       var errors = this.$plugin.check(this.$input);
 
+      // THEN
       expect(this.$input.attr).toHaveBeenCalledWith('data-name', 'inputText');
       expect(this.$input.hasClass('error')).toBe(true);
       expect(this.$input.hasClass('error-required')).toBe(false);
@@ -898,11 +1063,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add max-length error if text is too big', function() {
+      // GIVEN
       this.$input.attr('maxlength', '5');
       this.$input.val('foobar');
 
+      // WHEN
       var errors = this.$plugin.check(this.$input);
 
+      // THEN
       expect(this.$input.attr).toHaveBeenCalledWith('data-name', 'inputText');
       expect(this.$input.hasClass('error')).toBe(true);
       expect(this.$input.hasClass('error-required')).toBe(false);
@@ -937,11 +1105,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add pattern error if text is not valid', function() {
+      // GIVEN
       this.$input.attr('pattern', '[0-9]+');
       this.$input.val('foobar');
 
+      // WHEN
       var errors = this.$plugin.check(this.$input);
 
+      // THEN
       expect(this.$input.attr).toHaveBeenCalledWith('data-name', 'inputText');
       expect(this.$input.hasClass('error')).toBe(true);
       expect(this.$input.hasClass('error-required')).toBe(false);
@@ -976,6 +1147,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add same-as error if text not the same as another input', function() {
+      // GIVEN
       var $input = $('<input id="foo-input" title="foo input" type="text" />');
       $input.val('foo');
       this.$form.append($input);
@@ -983,8 +1155,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$input.attr('data-same-as', '#foo-input');
       this.$input.val('bar');
 
+      // WHEN
       var errors = this.$plugin.check(this.$input);
 
+      // THEN
       expect(this.$input.attr('data-name')).toBe('inputText');
       expect(this.$input.hasClass('error')).toBe(true);
       expect(this.$input.hasClass('error-required')).toBe(false);
@@ -1019,12 +1193,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputText = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$input);
 
+      // THEN
       expect(this.$input.attr('data-name')).toBe('inputText');
       expect(this.$input.hasClass('error')).toBe(true);
       expect(this.$input.hasClass('error-required')).toBe(false);
@@ -1070,11 +1247,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if checkbox is not checked', function() {
+      // GIVEN
       this.$input.attr('required', 'required');
       this.$input.removeAttr('checked');
 
+      // WHEN
       var errors = this.$plugin.check(this.$input);
 
+      // THEN
       expect(this.$input.attr('data-name')).toBe('inputCheckbox');
       expect(this.$input.hasClass('error')).toBe(true);
       expect(this.$input.hasClass('error-required')).toBe(true);
@@ -1105,12 +1285,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputCheckbox = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$input);
 
+      // THEN
       expect(this.$input.attr('data-name')).toBe('inputCheckbox');
       expect(this.$input.hasClass('error')).toBe(true);
       expect(this.$input.hasClass('error-required')).toBe(false);
@@ -1158,11 +1341,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if no radios are selected', function() {
+      // GIVEN
       this.$radio1.attr('required', 'required');
       this.$radio2.attr('required', 'required');
 
+      // WHEN
       var errors = this.$plugin.check(this.$radio1);
 
+      // THEN
       expect(this.$radio1.attr('data-name')).toBe('inputRadio');
       expect(this.$radio1.hasClass('error')).toBe(true);
       expect(this.$radio1.hasClass('error-required')).toBe(true);
@@ -1193,12 +1379,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputRadio = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$radio1);
 
+      // THEN
       expect(this.$radio1.attr('data-name')).toBe('inputRadio');
       expect(this.$radio1.hasClass('error')).toBe(true);
       expect(this.$radio1.hasClass('error-required')).toBe(false);
@@ -1244,11 +1433,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if textarea is empty', function() {
+      // GIVEN
       this.$textarea.attr('required', 'required');
       this.$textarea.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$textarea);
 
+      // THEN
       expect(this.$textarea.attr('data-name')).toBe('textarea');
       expect(this.$textarea.hasClass('error')).toBe(true);
       expect(this.$textarea.hasClass('error-required')).toBe(true);
@@ -1281,11 +1473,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min-length error if textarea is too small', function() {
+      // GIVEN
       this.$textarea.attr('data-min-length', '5');
       this.$textarea.val('foo');
 
+      // WHEN
       var errors = this.$plugin.check(this.$textarea);
 
+      // THEN
       expect(this.$textarea.attr('data-name')).toBe('textarea');
       expect(this.$textarea.hasClass('error')).toBe(true);
       expect(this.$textarea.hasClass('error-required')).toBe(false);
@@ -1318,11 +1513,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add max-length error if textarea is too big', function() {
+      // GIVEN
       this.$textarea.attr('maxlength', '3');
       this.$textarea.val('foobar');
 
+      // WHEN
       var errors = this.$plugin.check(this.$textarea);
 
+      // THEN
       expect(this.$textarea.attr('data-name')).toBe('textarea');
       expect(this.$textarea.hasClass('error')).toBe(true);
       expect(this.$textarea.hasClass('error-required')).toBe(false);
@@ -1355,12 +1553,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.textarea = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$textarea);
 
+      // THEN
       expect(this.$textarea.attr('data-name')).toBe('textarea');
       expect(this.$textarea.hasClass('error')).toBe(true);
       expect(this.$textarea.hasClass('error-required')).toBe(false);
@@ -1413,11 +1614,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if select is empty', function() {
+      // GIVEN
       this.$select.attr('required', 'required');
       this.$select.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$select);
 
+      // THEN
       expect(this.$select.attr('data-name')).toBe('select');
       expect(this.$select.hasClass('error')).toBe(true);
       expect(this.$select.hasClass('error-required')).toBe(true);
@@ -1448,12 +1652,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.select = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$select);
 
+      // THEN
       expect(this.$select.attr('data-name')).toBe('select');
       expect(this.$select.hasClass('error')).toBe(true);
       expect(this.$select.hasClass('error-required')).toBe(false);
@@ -1499,11 +1706,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if password is empty', function() {
+      // GIVEN
       this.$password.attr('required', 'required');
       this.$password.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$password);
 
+      // THEN
       expect(this.$password.attr('data-name')).toBe('inputPassword');
       expect(this.$password.hasClass('error')).toBe(true);
       expect(this.$password.hasClass('error-required')).toBe(true);
@@ -1537,11 +1747,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min-lengt error if password is too small', function() {
+      // GIVEN
       this.$password.attr('data-min-length', '5');
       this.$password.val('foo');
 
+      // WHEN
       var errors = this.$plugin.check(this.$password);
 
+      // THEN
       expect(this.$password.attr('data-name')).toBe('inputPassword');
       expect(this.$password.hasClass('error')).toBe(true);
       expect(this.$password.hasClass('error-required')).toBe(false);
@@ -1575,11 +1788,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min-length error if password is too big', function() {
+      // GIVEN
       this.$password.attr('maxlength', '3');
       this.$password.val('foobar');
 
+      // WHEN
       var errors = this.$plugin.check(this.$password);
 
+      // THEN
       expect(this.$password.attr('data-name')).toBe('inputPassword');
       expect(this.$password.hasClass('error')).toBe(true);
       expect(this.$password.hasClass('error-required')).toBe(false);
@@ -1613,6 +1829,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add same-as error if password not the same as another input', function() {
+      // GIVEN
       var $input = $('<input id="foo-input" title="foo input" type="text" />');
       $input.val('foo');
       this.$form.append($input);
@@ -1620,8 +1837,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$password.attr('data-same-as', '#foo-input');
       this.$password.val('bar');
 
+      // WHEN
       var errors = this.$plugin.check(this.$password);
 
+      // THEN
       expect(this.$password.attr('data-name')).toBe('inputPassword');
       expect(this.$password.hasClass('error')).toBe(true);
       expect(this.$password.hasClass('error-required')).toBe(false);
@@ -1655,12 +1874,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputPassword = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$password);
 
+      // THEN
       expect(this.$password.attr('data-name')).toBe('inputPassword');
       expect(this.$password.hasClass('error')).toBe(true);
       expect(this.$password.hasClass('error-required')).toBe(false);
@@ -1706,11 +1928,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if email is empty', function() {
+      // GIVEN
       this.$email.attr('required', 'required');
       this.$email.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$email);
 
+      // THEN
       expect(this.$email.attr('data-name')).toBe('inputEmail');
       expect(this.$email.hasClass('error')).toBe(true);
       expect(this.$email.hasClass('error-required')).toBe(true);
@@ -1746,11 +1971,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min-length error if email is too small', function() {
+      // GIVEN
       this.$email.attr('data-min-length', '15');
       this.$email.val('foo@gmail.com');
 
+      // WHEN
       var errors = this.$plugin.check(this.$email);
 
+      // THEN
       expect(this.$email.attr('data-name')).toBe('inputEmail');
       expect(this.$email.hasClass('error')).toBe(true);
       expect(this.$email.hasClass('error-required')).toBe(false);
@@ -1786,11 +2014,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add max-length error if email is too big', function() {
+      // GIVEN
       this.$email.attr('maxlength', '10');
       this.$email.val('foo@gmail.com');
 
+      // WHEN
       var errors = this.$plugin.check(this.$email);
 
+      // THEN
       expect(this.$email.attr('data-name')).toBe('inputEmail');
       expect(this.$email.hasClass('error')).toBe(true);
       expect(this.$email.hasClass('error-required')).toBe(false);
@@ -1826,6 +2057,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add same-as error if text not the same as another input', function() {
+      // GIVEN
       var $input = $('<input id="foo-input" title="foo input" type="text" />');
       $input.val('foo@gmail.com');
       this.$form.append($input);
@@ -1833,8 +2065,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$email.attr('data-same-as', '#foo-input');
       this.$email.val('bar@gmail.com');
 
+      // WHEN
       var errors = this.$plugin.check(this.$email);
 
+      // THEN
       expect(this.$email.attr('data-name')).toBe('inputEmail');
       expect(this.$email.hasClass('error')).toBe(true);
       expect(this.$email.hasClass('error-required')).toBe(false);
@@ -1870,10 +2104,13 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add email-multiple error if user typed several email and multiple is not set', function() {
+      // GIVEN
       this.$email.val('foo@gmail.com, bar@gmail.com');
 
+      // WHEN
       var errors = this.$plugin.check(this.$email);
 
+      // THEN
       expect(this.$email.attr('data-name')).toBe('inputEmail');
       expect(this.$email.hasClass('error')).toBe(true);
       expect(this.$email.hasClass('error-required')).toBe(false);
@@ -1909,11 +2146,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add email-pattern error if email is not valid', function() {
+      // GIVEN
       this.$email.attr('maxlength', '10');
       this.$email.val('@gmail.com');
 
+      // WHEN
       var errors = this.$plugin.check(this.$email);
 
+      // THEN
       expect(this.$email.attr('data-name')).toBe('inputEmail');
       expect(this.$email.hasClass('error')).toBe(true);
       expect(this.$email.hasClass('error-required')).toBe(false);
@@ -1949,12 +2189,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputEmail = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$email);
 
+      // THEN
       expect(this.$email.attr('data-name')).toBe('inputEmail');
       expect(this.$email.hasClass('error')).toBe(true);
       expect(this.$email.hasClass('error-required')).toBe(false);
@@ -2000,11 +2243,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if url is empty', function() {
+      // GIVEN
       this.$url.attr('required', 'required');
       this.$url.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$url);
 
+      // THEN
       expect(this.$url.attr('data-name')).toBe('inputUrl');
       expect(this.$url.hasClass('error')).toBe(true);
       expect(this.$url.hasClass('error-required')).toBe(true);
@@ -2040,11 +2286,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min-length error if url is too small', function() {
+      // GIVEN
       this.$url.attr('data-min-length', '50');
       this.$url.val('http://www.google.fr');
 
+      // WHEN
       var errors = this.$plugin.check(this.$url);
 
+      // THEN
       expect(this.$url.attr('data-name')).toBe('inputUrl');
       expect(this.$url.hasClass('error')).toBe(true);
       expect(this.$url.hasClass('error-required')).toBe(false);
@@ -2080,11 +2329,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add max-length error if url is too big', function() {
+      // GIVEN
       this.$url.attr('maxlength', '15');
       this.$url.val('http://www.google.fr');
 
+      // WHEN
       var errors = this.$plugin.check(this.$url);
 
+      // THEN
       expect(this.$url.attr('data-name')).toBe('inputUrl');
       expect(this.$url.hasClass('error')).toBe(true);
       expect(this.$url.hasClass('error-required')).toBe(false);
@@ -2120,6 +2372,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add same-as error if text not the same as another input', function() {
+      // GIVEN
       var $input = $('<input id="foo-input" title="foo input" type="text" />');
       $input.val('http://www.google.fr');
       this.$form.append($input);
@@ -2127,8 +2380,10 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$url.attr('data-same-as', '#foo-input');
       this.$url.val('https://www.google.fr');
 
+      // WHEN
       var errors = this.$plugin.check(this.$url);
 
+      // THEN
       expect(this.$url.attr('data-name')).toBe('inputUrl');
       expect(this.$url.hasClass('error')).toBe(true);
       expect(this.$url.hasClass('error-required')).toBe(false);
@@ -2164,11 +2419,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add pattern error if text is not valid', function() {
+      // GIVEN
       this.$url.attr('pattern', 'https://[A-Z\\.]+');
       this.$url.val('http://www.google.fr');
 
+      // WHEN
       var errors = this.$plugin.check(this.$url);
 
+      // THEN
       expect(this.$url.attr).toHaveBeenCalledWith('data-name', 'inputUrl');
       expect(this.$url.hasClass('error')).toBe(true);
       expect(this.$url.hasClass('error-required')).toBe(false);
@@ -2204,10 +2462,13 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add url-pattern error if url is not valid', function() {
+      // GIVEN
       this.$url.val('google');
 
+      // WHEN
       var errors = this.$plugin.check(this.$url);
 
+      // THEN
       expect(this.$url.attr('data-name')).toBe('inputUrl');
       expect(this.$url.hasClass('error')).toBe(true);
       expect(this.$url.hasClass('error-required')).toBe(false);
@@ -2243,12 +2504,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputUrl = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$url);
 
+      // THEN
       expect(this.$url.attr('data-name')).toBe('inputUrl');
       expect(this.$url.hasClass('error')).toBe(true);
       expect(this.$url.hasClass('error-required')).toBe(false);
@@ -2294,11 +2558,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if number is empty', function() {
+      // GIVEN
       this.$number.attr('required', 'required');
       this.$number.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$number);
 
+      // THEN
       expect(this.$number.attr('data-name')).toBe('inputNumber');
       expect(this.$number.hasClass('error')).toBe(true);
       expect(this.$number.hasClass('error-required')).toBe(true);
@@ -2331,11 +2598,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min error if number is less than min value', function() {
+      // GIVEN
       this.$number.attr('min', '0');
       this.$number.val('-1');
 
+      // WHEN
       var errors = this.$plugin.check(this.$number);
 
+      // THEN
       expect(this.$number.attr('data-name')).toBe('inputNumber');
       expect(this.$number.hasClass('error')).toBe(true);
       expect(this.$number.hasClass('error-required')).toBe(false);
@@ -2368,11 +2638,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add max error if number is greater than max value', function() {
+      // GIVEN
       this.$number.attr('max', '0');
       this.$number.val('1');
 
+      // WHEN
       var errors = this.$plugin.check(this.$number);
 
+      // THEN
       expect(this.$number.attr('data-name')).toBe('inputNumber');
       expect(this.$number.hasClass('error')).toBe(true);
       expect(this.$number.hasClass('error-required')).toBe(false);
@@ -2405,12 +2678,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputNumber = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$number);
 
+      // THEN
       expect(this.$number.attr('data-name')).toBe('inputNumber');
       expect(this.$number.hasClass('error')).toBe(true);
       expect(this.$number.hasClass('error-required')).toBe(false);
@@ -2457,11 +2733,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if date is empty', function() {
+      // GIVEN
       this.$date.attr('required', 'required');
       this.$date.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$date);
 
+      // THEN
       expect(this.$date.attr('data-name')).toBe('inputDate');
       expect(this.$date.hasClass('error')).toBe(true);
       expect(this.$date.hasClass('error-required')).toBe(true);
@@ -2496,10 +2775,13 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add date-pattern error if date is not valid', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('2013-1-1');
 
+      // WHEN
       var errors = this.$plugin.check(this.$date);
 
+      // THEN
       expect(this.$date.attr('data-name')).toBe('inputDate');
       expect(this.$date.hasClass('error')).toBe(true);
       expect(this.$date.hasClass('error-required')).toBe(false);
@@ -2534,10 +2816,13 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add date-invalid error if date is not valid', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('2013-02-30');
 
+      // WHEN
       var errors = this.$plugin.check(this.$date);
 
+      // THEN
       expect(this.$date.attr('data-name')).toBe('inputDate');
       expect(this.$date.hasClass('error')).toBe(true);
       expect(this.$date.hasClass('error-required')).toBe(false);
@@ -2572,11 +2857,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min error if date is less than min value', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('2013-01-01');
       this.$date.attr('min', '2013-01-05');
 
+      // WHEN
       var errors = this.$plugin.check(this.$date);
 
+      // THEN
       expect(this.$date.attr('data-name')).toBe('inputDate');
       expect(this.$date.hasClass('error')).toBe(true);
       expect(this.$date.hasClass('error-required')).toBe(false);
@@ -2611,11 +2899,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min error if date is greater than max value', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('2013-01-05');
       this.$date.attr('max', '2013-01-01');
 
+      // WHEN
       var errors = this.$plugin.check(this.$date);
 
+      // THEN
       expect(this.$date.attr('data-name')).toBe('inputDate');
       expect(this.$date.hasClass('error')).toBe(true);
       expect(this.$date.hasClass('error-required')).toBe(false);
@@ -2650,12 +2941,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputDate = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$date);
 
+      // THEN
       expect(this.$date.attr('data-name')).toBe('inputDate');
       expect(this.$date.hasClass('error')).toBe(true);
       expect(this.$date.hasClass('error-required')).toBe(false);
@@ -2702,11 +2996,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if date is empty', function() {
+      // GIVEN
       this.$month.attr('required', 'required');
       this.$month.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$month);
 
+      // THEN
       expect(this.$month.attr('data-name')).toBe('inputMonth');
       expect(this.$month.hasClass('error')).toBe(true);
       expect(this.$month.hasClass('error-required')).toBe(true);
@@ -2741,10 +3038,13 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add date-pattern error if date is not valid', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('2013-1');
 
+      // WHEN
       var errors = this.$plugin.check(this.$month);
 
+      // THEN
       expect(this.$month.attr('data-name')).toBe('inputMonth');
       expect(this.$month.hasClass('error')).toBe(true);
       expect(this.$month.hasClass('error-required')).toBe(false);
@@ -2779,10 +3079,13 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add date-invalid error if date is not valid', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('2013-13');
 
+      // WHEN
       var errors = this.$plugin.check(this.$month);
 
+      // THEN
       expect(this.$month.attr('data-name')).toBe('inputMonth');
       expect(this.$month.hasClass('error')).toBe(true);
       expect(this.$month.hasClass('error-required')).toBe(false);
@@ -2817,11 +3120,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min error if date is less than min value', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('2013-01');
       this.$month.attr('min', '2013-02');
 
+      // WHEN
       var errors = this.$plugin.check(this.$month);
 
+      // THEN
       expect(this.$month.attr('data-name')).toBe('inputMonth');
       expect(this.$month.hasClass('error')).toBe(true);
       expect(this.$month.hasClass('error-required')).toBe(false);
@@ -2856,11 +3162,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min error if date is greater than max value', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('2013-02');
       this.$month.attr('max', '2013-01');
 
+      // WHEN
       var errors = this.$plugin.check(this.$month);
 
+      // THEN
       expect(this.$month.attr('data-name')).toBe('inputMonth');
       expect(this.$month.hasClass('error')).toBe(true);
       expect(this.$month.hasClass('error-required')).toBe(false);
@@ -2895,12 +3204,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputMonth = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$month);
 
+      // THEN
       expect(this.$month.attr('data-name')).toBe('inputMonth');
       expect(this.$month.hasClass('error')).toBe(true);
       expect(this.$month.hasClass('error-required')).toBe(false);
@@ -2947,11 +3259,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add required error if time is empty', function() {
+      // GIVEN
       this.$time.attr('required', 'required');
       this.$time.val('');
 
+      // WHEN
       var errors = this.$plugin.check(this.$time);
 
+      // THEN
       expect(this.$time.attr('data-name')).toBe('inputTime');
       expect(this.$time.hasClass('error')).toBe(true);
       expect(this.$time.hasClass('error-required')).toBe(true);
@@ -2986,10 +3301,13 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add time-pattern error if time is not valid', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('00:1:1');
 
+      // WHEN
       var errors = this.$plugin.check(this.$time);
 
+      // THEN
       expect(this.$time.attr('data-name')).toBe('inputTime');
       expect(this.$time.hasClass('error')).toBe(true);
       expect(this.$time.hasClass('error-required')).toBe(false);
@@ -3024,10 +3342,13 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add time-invalid error if time is not valid', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('00:60:61');
 
+      // WHEN
       var errors = this.$plugin.check(this.$time);
 
+      // THEN
       expect(this.$time.attr('data-name')).toBe('inputTime');
       expect(this.$time.hasClass('error')).toBe(true);
       expect(this.$time.hasClass('error-required')).toBe(false);
@@ -3062,11 +3383,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min error if time is less than min value', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('01:00:00');
       this.$time.attr('min', '02:00:00');
 
+      // WHEN
       var errors = this.$plugin.check(this.$time);
 
+      // THEN
       expect(this.$time.attr('data-name')).toBe('inputTime');
       expect(this.$time.hasClass('error')).toBe(true);
       expect(this.$time.hasClass('error-required')).toBe(false);
@@ -3101,11 +3425,14 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add min error if date is greater than max value', function() {
+      // GIVEN
       spyOn($.fn, 'val').andReturn('02:00:00');
       this.$time.attr('max', '01:00:00');
 
+      // WHEN
       var errors = this.$plugin.check(this.$time);
 
+      // THEN
       expect(this.$time.attr('data-name')).toBe('inputTime');
       expect(this.$time.hasClass('error')).toBe(true);
       expect(this.$time.hasClass('error-required')).toBe(false);
@@ -3140,12 +3467,15 @@ describe('jqForm Plugin: Test Suite', function() {
     });
 
     it('should add custom validation error', function() {
+      // GIVEN
       this.$plugin.opts.validations.inputTime = function() {
         return 'custom error';
       };
 
+      // WHEN
       var errors = this.$plugin.check(this.$time);
 
+      // THEN
       expect(this.$time.attr('data-name')).toBe('inputTime');
       expect(this.$time.hasClass('error')).toBe(true);
       expect(this.$time.hasClass('error-required')).toBe(false);
