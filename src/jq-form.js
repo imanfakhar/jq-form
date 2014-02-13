@@ -1393,6 +1393,7 @@
     /** Clear form. */
     clear: function() {
       var $form = this.$form;
+      $form.removeClass(CSS_SUBMITTED);
       $form.find('input').each(function() {
         var $this = $(this);
         if (attr($this, TYPE) !== 'hidden') {

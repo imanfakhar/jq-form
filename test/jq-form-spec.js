@@ -133,7 +133,7 @@ describe('jqForm Plugin: Test Suite', function() {
     });
   });
 
-  describe('jqForm: checkpublic functions', function() {
+  describe('jqForm: check public functions', function() {
     beforeEach(function() {
       this.$form.jqForm();
       this.$plugin = this.$form.data('jqForm');
@@ -753,6 +753,8 @@ describe('jqForm Plugin: Test Suite', function() {
         data: this.datas
       });
 
+      expect(this.$plugin.$form.hasClass('submitted')).toBe(true);
+
       expect(this.$plugin.xhr).toBe(this.xhr);
       expect(this.$plugin.xhr.done).toHaveBeenCalled();
       expect(this.$plugin.xhr.fail).toHaveBeenCalled();
@@ -762,7 +764,9 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$plugin.xhr.done.argsForCall[0][0]('foobar');
       expect(this.$plugin.opts.onSubmitSuccess).toHaveBeenCalledWith('foobar');
       expect(this.$plugin.xhr).not.toBe(null);
+
       expect(this.$plugin.clear).toHaveBeenCalled();
+      expect(this.$plugin.$form.hasClass('submitted')).toBe(false);
 
       spyOn(this.$plugin.opts, 'onSubmitError');
       var jqXhr = {
@@ -796,6 +800,8 @@ describe('jqForm Plugin: Test Suite', function() {
         data: this.datas
       });
 
+      expect(this.$plugin.$form.hasClass('submitted')).toBe(true);
+
       expect(this.$plugin.xhr).toBe(this.xhr);
       expect(this.$plugin.xhr.done).toHaveBeenCalled();
       expect(this.$plugin.xhr.fail).toHaveBeenCalled();
@@ -805,7 +811,9 @@ describe('jqForm Plugin: Test Suite', function() {
       this.$plugin.xhr.done.argsForCall[0][0]('foobar');
       expect(this.$plugin.opts.onSubmitSuccess).toHaveBeenCalledWith('foobar');
       expect(this.$plugin.xhr).not.toBe(null);
+
       expect(this.$plugin.clear).not.toHaveBeenCalled();
+      expect(this.$plugin.$form.hasClass('submitted')).toBe(true);
 
       spyOn(this.$plugin.opts, 'onSubmitError');
       var jqXhr = {
