@@ -53,9 +53,14 @@
   display: block;
 }
 
+input:focus:invalid,
+textarea:focus:invalid,
 input:focus:invalid:focus,
+textarea:focus:invalid:focus,
 .submitted input.error:focus,
-input.error:focus {
+.submitted textarea.error:focus,
+input.error:focus,
+textarea.error:focus {
   color: #555555;
   border-color: rgba(82, 168, 236, 0.8);
 
@@ -65,7 +70,9 @@ input.error:focus {
 }
 
 .submitted input.error,
-input.error.dirty {
+.submitted textarea.error,
+input.error.dirty,
+textarea.error.dirty {
   border-color: #e9322d;
 
   -webkit-box-shadow: 0 0 6px #f8b9b7;
